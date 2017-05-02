@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_bukaanalytics_home"
+            android:title="Home" />
+        <item
+            android:id="@+id/nav_pricing"
+            android:icon="@drawable/ic_bukaanalytics_pricing"
+            android:title="Pricing" />
+        <item
+            android:id="@+id/nav_bidding"
+            android:icon="@drawable/ic_bukaanalytics_bidding"
+            android:title="Bidding" />
+    </group>
+
+</menu>
