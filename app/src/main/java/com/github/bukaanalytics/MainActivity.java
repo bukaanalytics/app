@@ -111,7 +111,9 @@ public class MainActivity extends AppCompatActivity
             fragmentclass = FragmentHome.class;
         } else if (id == R.id.nav_pricing) {
             fragmentclass = FragmentPricing.class;
-        } else if (id == R.id.nav_bidding) {
+        } else if(id == R.id.nav_bidding) {
+            fragmentclass = FragmentBidding.class;
+        } else if (id == R.id.nav_rn) {
             Intent intent = new Intent(this, MyReactActivity.class);
             this.startActivity(intent);
 
@@ -121,7 +123,6 @@ public class MainActivity extends AppCompatActivity
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
             return true;
-            // fragmentclass = FragmentBidding.class;
         } else {
             fragmentclass = FragmentHome.class;
         }
