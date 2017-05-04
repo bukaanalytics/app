@@ -1,0 +1,24 @@
+{
+  "name": "bukaanalytics",
+  "version": "0.0.1",
+  "description": "This Repo contains BukaAnalytics app code. We use native java code to build our app.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node node_modules/react-native/local-cli/cli.js start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bukaanalytics/app.git"
+  },
+  "author": "Habib",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bukaanalytics/app/issues"
+  },
+  "homepage": "https://github.com/bukaanalytics/app#readme",
+  "dependencies": {
+    "react": "^15.4.2",
+    "react-native": "^0.39.2"
+  }
+}

@@ -1,5 +1,6 @@
 package com.github.bukaanalytics;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.view.MenuItem;
 import com.github.bukaanalytics.biddingtools.FragmentBidding;
 import com.github.bukaanalytics.home.FragmentHome;
 import com.github.bukaanalytics.pricingtools.FragmentPricing;
+import com.github.bukaanalytics.reactnative.MyReactActivity;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -110,7 +112,16 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_pricing) {
             fragmentclass = FragmentPricing.class;
         } else if (id == R.id.nav_bidding) {
-            fragmentclass = FragmentBidding.class;
+            Intent intent = new Intent(this, MyReactActivity.class);
+            this.startActivity(intent);
+
+            item.setChecked(true);
+            setTitle(item.getTitle());
+
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+            return true;
+            // fragmentclass = FragmentBidding.class;
         } else {
             fragmentclass = FragmentHome.class;
         }

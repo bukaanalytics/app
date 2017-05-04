@@ -8,6 +8,8 @@
 /captures
 .externalNativeBuild
 
+# RN
+node_modules
 
 # Below created by gitignore
 # Created by https://www.gitignore.io/api/android,androidstudio
