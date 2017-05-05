@@ -1,5 +1,9 @@
 package com.github.bukaanalytics;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -16,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.github.bukaanalytics.biddingtools.FragmentBidding;
+import com.github.bukaanalytics.common.BukaAnalyticsBroadcastReceiver;
 import com.github.bukaanalytics.home.FragmentHome;
 import com.github.bukaanalytics.pricingtools.FragmentPricing;
 
@@ -62,6 +67,8 @@ public class MainActivity extends AppCompatActivity
 
         _navview = (NavigationView) findViewById(R.id.nav_view);
         _navview.setNavigationItemSelectedListener(this);
+
+        scheduleAlarm();
     }
 
     @Override
@@ -136,5 +143,29 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    private void scheduleAlarm () {
+        // Construct an intent that will execute the AlarmReceiver
+        Intent intent = new Intent(getApplicationContext(), BukaAnalyticsBroadcastReceiver.class);
+        // Create a PendingIntent to be triggered when the alarm goes off
+        final PendingIntent pIntent = PendingIntent.getBroadcast(
+                this, BukaAnalyticsBroadcastReceiver.REQUEST_CODE,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // Setup periodic alarm every every half hour from this point onwards
+        long firstMillis = System.currentTimeMillis(); // alarm is set right away
+        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        // First parameter is the type: ELAPSED_REALTIME, ELAPSED_REALTIME_WAKEUP, RTC_WAKEUP
+        // Interval can be INTERVAL_FIFTEEN_MINUTES, INTERVAL_HALF_HOUR, INTERVAL_HOUR, INTERVAL_DAY
+        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis,
+                AlarmManager.INTERVAL_HALF_HOUR, pIntent);
+    }
+
+    public void cancelAlarm() {
+        Intent intent = new Intent(getApplicationContext(), BukaAnalyticsBroadcastReceiver.class);
+        final PendingIntent pIntent = PendingIntent.getBroadcast(this, BukaAnalyticsBroadcastReceiver.REQUEST_CODE,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        alarm.cancel(pIntent);
     }
 }
