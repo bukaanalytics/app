@@ -3,12 +3,18 @@ package com.github.bukaanalytics.home;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.github.bukaanalytics.R;
+import com.github.bukaanalytics.common.model.BukaAnalyticsSqliteOpenHelper;
+import com.github.bukaanalytics.common.model.Product;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -66,6 +72,22 @@ public class FragmentHome extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        BukaAnalyticsSqliteOpenHelper helper = BukaAnalyticsSqliteOpenHelper.getInstance(getContext());
+        List<Product> posts = helper.getAllProducts();
+
+        StringBuffer sb = new StringBuffer();
+        for (Product p : posts) {
+            sb.append(p.name + "\n");
+        }
+
+        TextView tv = (TextView) getView().findViewById(R.id.text_home);
+        tv.setText(sb.toString());
+
+        super.onActivityCreated(savedInstanceState);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

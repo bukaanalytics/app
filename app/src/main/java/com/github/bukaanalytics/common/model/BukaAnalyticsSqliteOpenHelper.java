@@ -86,7 +86,7 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
         }
     }
 
-    public List<Product> getAllPosts() {
+    public List<Product> getAllProducts() {
         List<Product> posts = new ArrayList<>();
 
         // SELECT * FROM POSTS
