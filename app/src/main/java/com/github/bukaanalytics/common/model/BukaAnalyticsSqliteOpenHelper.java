@@ -16,18 +16,18 @@ import java.util.List;
 
 public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
     // debugging only
-    private String TAG = "BukaAnalyticsSqliteOpenHelper";
+    private String TAG = "BASqliteOpenHelper";
 
     // Database Info
     private static final String DATABASE_NAME = "baDatabase";
     private static final int DATABASE_VERSION = 1;
 
     // Table Names
-    private static final String TABLE_POSTS = "posts";
+    private static final String TABLE_PRODUCTS = "products";
 
-    // Post Table Columns
-    private static final String KEY_POST_ID = "id";
-    private static final String KEY_POST_TEXT = "text";
+    // Product Table Columns
+    private static final String KEY_PRODUCT_ID = "id";
+    private static final String KEY_PRODUCT_NAME = "name";
 
     // Instance
     private static BukaAnalyticsSqliteOpenHelper sInstance;
@@ -38,10 +38,10 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_POSTS_TABLE = "CREATE TABLE " + TABLE_POSTS +
+        String CREATE_POSTS_TABLE = "CREATE TABLE " + TABLE_PRODUCTS +
                 "(" +
-                KEY_POST_ID + " INTEGER PRIMARY KEY," + // Define a primary key
-                KEY_POST_TEXT + " TEXT" +
+                KEY_PRODUCT_ID + " STRING PRIMARY KEY," + // Define a primary key
+                KEY_PRODUCT_NAME + " TEXT" +
                 ")";
         db.execSQL(CREATE_POSTS_TABLE);
     }
@@ -50,7 +50,7 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion != newVersion) {
             // Simplest implementation is to drop all old tables and recreate them
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_POSTS);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCTS);
             onCreate(db);
         }
     }
@@ -65,22 +65,19 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
         return sInstance;
     }
 
-    public void addProduct
-
-    public void addPost(Post post){
+    public void addProduct(Product product){
         SQLiteDatabase db = getWritableDatabase();
 
         // It's a good idea to wrap our insert in a transaction. This helps with performance and ensures
         // consistency of the database.
         db.beginTransaction();
         try {
-            // The user might already exist in the database (i.e. the same user created multiple posts).
-
             ContentValues values = new ContentValues();
-            values.put(KEY_POST_TEXT, post.text);
+            values.put(KEY_PRODUCT_ID, product.id);
+            values.put(KEY_PRODUCT_NAME, product.name);
 
             // Notice how we haven't specified the primary key. SQLite auto increments the primary key column.
-            db.insertOrThrow(TABLE_POSTS, null, values);
+            db.insertOrThrow(TABLE_PRODUCTS, null, values);
             db.setTransactionSuccessful();
         } catch (Exception e) {
             Log.d(TAG, "Error while trying to add post to database");
@@ -89,25 +86,26 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
         }
     }
 
-    public List<Post> getAllPosts() {
-        List<Post> posts = new ArrayList<>();
+    public List<Product> getAllPosts() {
+        List<Product> posts = new ArrayList<>();
 
         // SELECT * FROM POSTS
         // LEFT OUTER JOIN USERS
         // ON POSTS.KEY_POST_USER_ID_FK = USERS.KEY_USER_ID
-        String POSTS_SELECT_QUERY =
-                String.format("SELECT * FROM %s ", TABLE_POSTS);
+        String PRODUCTS_SELECT_QUERY =
+                String.format("SELECT * FROM %s ", TABLE_PRODUCTS);
 
         // "getReadableDatabase()" and "getWriteableDatabase()" return the same object (except under low
         // disk space scenarios)
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery(POSTS_SELECT_QUERY, null);
+        Cursor cursor = db.rawQuery(PRODUCTS_SELECT_QUERY, null);
         try {
             if (cursor.moveToFirst()) {
                 do {
-                    Post newPost = new Post();
-                    newPost.text = cursor.getString(cursor.getColumnIndex(KEY_POST_TEXT));
-                    posts.add(newPost);
+                    Product newProduct = new Product();
+                    newProduct.name = cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_NAME));
+                    newProduct.id = cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_ID));
+                    posts.add(newProduct);
                 } while(cursor.moveToNext());
             }
         } catch (Exception e) {
