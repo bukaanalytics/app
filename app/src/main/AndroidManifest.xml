@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.github.bukaanalytics">
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -28,8 +30,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+
+        <service
+            android:name=".common.BukaAnalyticsIntentService"
+            android:exported="false" />
+
+        <receiver
+            android:name=".common.BukaAnalyticsBroadcastReceiver"
+            android:process=":remote" >
+        </receiver>
+
+        <receiver android:name="com.github.bukaanalytics.common.BukaAnalyticsWakefulBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

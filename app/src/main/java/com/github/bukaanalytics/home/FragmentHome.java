@@ -3,12 +3,18 @@ package com.github.bukaanalytics.home;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.github.bukaanalytics.R;
+import com.github.bukaanalytics.common.model.BukaAnalyticsSqliteOpenHelper;
+import com.github.bukaanalytics.common.model.Post;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -59,13 +65,16 @@ public class FragmentHome extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -84,6 +93,22 @@ public class FragmentHome extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        BukaAnalyticsSqliteOpenHelper helper = BukaAnalyticsSqliteOpenHelper.getInstance(getContext());
+        List<Post> posts = helper.getAllPosts();
+
+        StringBuffer sb = new StringBuffer();
+        for (Post p : posts) {
+            sb.append(p.text + "\n");
+        }
+
+        TextView tv = (TextView) getView().findViewById(R.id.text_home);
+        tv.setText(sb.toString());
+
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
