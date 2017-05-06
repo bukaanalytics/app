@@ -19,6 +19,7 @@
   "homepage": "https://github.com/bukaanalytics/app#readme",
   "dependencies": {
     "react": "^15.4.2",
-    "react-native": "^0.39.2"
+    "react-native": "^0.39.2",
+    "react-native-sqlite-storage": "^3.3.1"
   }
 }

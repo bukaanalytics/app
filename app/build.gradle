@@ -37,4 +37,5 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
     compile 'com.facebook.react:react-native:0.39.2'
+    compile project(':react-native-sqlite-storage')
 }
