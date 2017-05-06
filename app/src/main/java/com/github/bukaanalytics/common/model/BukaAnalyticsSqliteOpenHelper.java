@@ -28,6 +28,7 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
     // Product Table Columns
     private static final String KEY_PRODUCT_ID = "id";
     private static final String KEY_PRODUCT_NAME = "name";
+    private static final String KEY_PRODUCT_SELLERID = "sellerId";
 
     // Instance
     private static BukaAnalyticsSqliteOpenHelper sInstance;
@@ -75,6 +76,7 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
             ContentValues values = new ContentValues();
             values.put(KEY_PRODUCT_ID, product.id);
             values.put(KEY_PRODUCT_NAME, product.name);
+            values.put(KEY_PRODUCT_SELLERID, product.sellerId);
 
             // Notice how we haven't specified the primary key. SQLite auto increments the primary key column.
             db.insertOrThrow(TABLE_PRODUCTS, null, values);
@@ -102,9 +104,9 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
         try {
             if (cursor.moveToFirst()) {
                 do {
-                    Product newProduct = new Product();
-                    newProduct.name = cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_NAME));
-                    newProduct.id = cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_ID));
+                    Product newProduct = new Product(cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_NAME)),
+                                                        cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_ID)),
+                                                        cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_SELLERID)));
                     posts.add(newProduct);
                 } while(cursor.moveToNext());
             }
