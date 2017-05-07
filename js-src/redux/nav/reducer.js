@@ -1,6 +1,7 @@
+import { NavigationActions } from 'react-navigation';
 import { AppNavigator } from '@nav/index'
 
-const initialState = AppNavigator.router.getStateForAction(AppNavigator.router.getActionForPathAndParams('HomeStack'));
+const initialState = AppNavigator.router.getStateForAction(NavigationActions.navigate({ routeName: 'HomeStack' }));
 
 export default function navReducer(state = initialState, action) {
   let nextState
