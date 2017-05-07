@@ -12,6 +12,9 @@ import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 /**
  * Created by fawwaz.muhammad on 05/05/17.
  */
@@ -43,8 +46,12 @@ public class BukaAnalyticsIntentService extends IntentService {
                     public void onCompleted(Exception e, JsonObject result) {
                         String title = result.get("title").getAsString();
 
+                        Calendar calendar = Calendar.getInstance();
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd HH:mm");
+                        String time = sdf.format(calendar.getTime());
+
                         Post hnpost = new Post();
-                        hnpost.text = title;
+                        hnpost.text = time + " >> " + title;
 
                         BukaAnalyticsSqliteOpenHelper db = BukaAnalyticsSqliteOpenHelper.getInstance(getApplicationContext());
                         db.addPost(hnpost);
