@@ -1,6 +1,6 @@
 import { AppNavigator } from '@nav/index'
 
-const initialState = AppNavigator.router.getStateForAction(AppNavigator.router.getActionForPathAndParams('Home'));
+const initialState = AppNavigator.router.getStateForAction(AppNavigator.router.getActionForPathAndParams('HomeStack'));
 
 export default function navReducer(state = initialState, action) {
   let nextState

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { applyMiddleware, compose, createStore } from 'redux';
 import { connect, Provider } from 'react-redux';
+import { composeWithDevTools } from 'remote-redux-devtools';
 import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
 
@@ -29,7 +30,8 @@ class Root extends Component {
       ];
     }
 
-    this.store = compose(
+    const composeEnhancers = composeWithDevTools({ realtime: true, port: 8000 });
+    this.store = composeEnhancers(
       applyMiddleware(...middleware),
     )(createStore)(rootReducer)
   }
