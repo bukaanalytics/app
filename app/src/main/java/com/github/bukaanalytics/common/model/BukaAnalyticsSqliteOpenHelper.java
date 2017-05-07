@@ -3,6 +3,7 @@ package com.github.bukaanalytics.common.model;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -39,10 +40,12 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        Log.d(TAG, "onCreate: mau exec CREATE TABLE");
         String CREATE_POSTS_TABLE = "CREATE TABLE " + TABLE_PRODUCTS +
                 "(" +
-                KEY_PRODUCT_ID + " STRING PRIMARY KEY," + // Define a primary key
-                KEY_PRODUCT_NAME + " TEXT" +
+                KEY_PRODUCT_ID + " TEXT PRIMARY KEY," + // Define a primary key
+                KEY_PRODUCT_NAME + " TEXT," +
+                KEY_PRODUCT_SELLERID + " TEXT" +
                 ")";
         db.execSQL(CREATE_POSTS_TABLE);
     }
@@ -81,8 +84,12 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
             // Notice how we haven't specified the primary key. SQLite auto increments the primary key column.
             db.insertOrThrow(TABLE_PRODUCTS, null, values);
             db.setTransactionSuccessful();
-        } catch (Exception e) {
-            Log.d(TAG, "Error while trying to add post to database");
+        }
+        catch (SQLException e) {
+            Log.d(TAG, "SQLException: " + e.getMessage());
+        }
+        catch (Exception e) {
+            Log.d(TAG, "Error while trying to add post to database: " + e.getMessage());
         } finally {
             db.endTransaction();
         }

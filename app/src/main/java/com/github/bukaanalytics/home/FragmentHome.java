@@ -80,6 +80,7 @@ public class FragmentHome extends Fragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        final BukaAnalyticsSqliteOpenHelper db = BukaAnalyticsSqliteOpenHelper.getInstance(getContext());
         Ion.with(getContext())
                 .load("https://api.bukalapak.com/v2/users/7183893/products.json")
                 .asJsonObject()
@@ -94,22 +95,20 @@ public class FragmentHome extends Fragment {
                             String sellerId = product.get("seller_id").getAsString();
 
                             Product newProduct = new Product(id, name, sellerId);
-                            BukaAnalyticsSqliteOpenHelper db = BukaAnalyticsSqliteOpenHelper.getInstance(getContext());
 
                             db.addProduct(newProduct);
                         }
                     }
                 });
-//        BukaAnalyticsSqliteOpenHelper helper = BukaAnalyticsSqliteOpenHelper.getInstance(getContext());
-//        List<Product> posts = helper.getAllProducts();
-//
-//        StringBuffer sb = new StringBuffer();
-//        for (Product p : posts) {
-//            sb.append(p.name + "\n");
-//        }c
-//
-//        TextView tv = (TextView) getView().findViewById(R.id.text_home);
-//        tv.setText(sb.toString());
+        List<Product> posts = db.getAllProducts();
+
+        StringBuffer sb = new StringBuffer();
+        for (Product p : posts) {
+            sb.append(p.id + " " + p.name + "\n");
+        }
+
+        TextView tv = (TextView) getView().findViewById(R.id.text_home);
+        tv.setText(sb.toString());
 
         super.onActivityCreated(savedInstanceState);
     }
