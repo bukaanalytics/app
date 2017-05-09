@@ -13,8 +13,8 @@ const app = {
 
 const brand = {
   brand: {
-    primary: '#0E4EF8',
-    secondary: '#17233D',
+    primary: '#d71149',
+    secondary: '#ffc53e',
   },
 };
 
