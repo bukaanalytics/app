@@ -6,7 +6,7 @@
  */
 
 const app = {
-  background: '#E9EBEE',
+  background: '#ddd',
   cardBackground: '#FFFFFF',
   listItemBackground: '#FFFFFF',
 };
@@ -16,7 +16,8 @@ const brand = {
     lightPrimary: '#f3b0c4',
     primary: '#d71149',
     secondary: '#c30f42',
-    accent: '#ffc53e'
+    accent: '#ffc53e',
+    success: '#87cc62'
   },
 };
 
