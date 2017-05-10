@@ -13,6 +13,7 @@ const app = {
 
 const brand = {
   brand: {
+    lightPrimary: '#f3b0c4',
     primary: '#d71149',
     secondary: '#c30f42',
     accent: '#ffc53e'

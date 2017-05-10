@@ -25,6 +25,11 @@ export default {
     justifyContent: 'center',
     alignItems: 'center',
   },
+  spreadHorizontalContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
   windowSize: {
     height: Sizes.screen.height,
     width: Sizes.screen.width,
