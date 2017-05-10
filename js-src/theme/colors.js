@@ -14,7 +14,8 @@ const app = {
 const brand = {
   brand: {
     primary: '#d71149',
-    secondary: '#ffc53e',
+    secondary: '#c30f42',
+    accent: '#ffc53e'
   },
 };
 
