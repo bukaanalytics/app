@@ -9,6 +9,7 @@ import ExampleScreen from '@screen/Example/ExampleContainer'
 import { AppColors } from '@theme/'
 
 const navOptions = ({navigation}) => ({
+      title: 'BukaAnalytics',
       headerTintColor: 'white',
       headerStyle: { backgroundColor: AppColors.brand.primary },
       headerLeft: (
