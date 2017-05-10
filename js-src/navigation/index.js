@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux';
-import { DrawerNavigator, StackNavigator, NavigationActions, addNavigationHelpers } from 'react-navigation';
+import { DrawerItems, DrawerNavigator, StackNavigator, NavigationActions, addNavigationHelpers } from 'react-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import HomeScreen from '@screen/Home/HomeContainer'
@@ -45,6 +45,17 @@ export const AppNavigator = DrawerNavigator({
   },
   ExampleStack: {
     screen: ExampleStack
+  }
+}, {
+  contentOptions: {
+    activeTintColor: '#fff',
+    inactiveTintColor: '#fff',
+    activeBackgroundColor: AppColors.brand.secondary,
+    style: {
+      flex: 1,
+      backgroundColor: AppColors.brand.primary,
+      paddingTop: 0
+    }
   }
 });
 
