@@ -3,38 +3,28 @@ package com.github.bukaanalytics.home;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.github.bukaanalytics.R;
-import com.github.bukaanalytics.common.model.BukaAnalyticsSqliteOpenHelper;
-import com.github.bukaanalytics.common.model.Product;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.koushikdutta.async.future.FutureCallback;
-import com.koushikdutta.ion.Ion;
-
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FragmentHome.OnFragimentInteractionListener} interface
+ * {@link FragmentHome.OnFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link FragmentHome#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class FragmentHome extends Fragment {
-    // TODO: Rename parameter iarguments, choose names that match
+    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Riename and change types of parameters
+    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -48,7 +38,7 @@ public class FragmentHome extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Pairameter 1.
+     * @param param1 Parameter 1.
      * @param param2 Parameter 2.
      * @return A new instance of fragment FragmentHome.
      */
@@ -76,41 +66,6 @@ public class FragmentHome extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        final BukaAnalyticsSqliteOpenHelper db = BukaAnalyticsSqliteOpenHelper.getInstance(getContext());
-        Ion.with(getContext())
-                .load("https://api.bukalapak.com/v2/users/7183893/products.json")
-                .asJsonObject()
-                .setCallback(new FutureCallback<JsonObject>() {
-                    @Override
-                    public void onCompleted(Exception e, JsonObject result) {
-                        JsonArray products = result.getAsJsonArray("products");
-                        for (int i = 0; i < products.size(); i++) {
-                            JsonObject product = products.get(i).getAsJsonObject();
-                            String id = product.get("id").getAsString();
-                            String name = product.get("name").getAsString();
-                            String sellerId = product.get("seller_id").getAsString();
-
-                            Product newProduct = new Product(id, name, sellerId);
-
-                            db.addProduct(newProduct);
-                        }
-                    }
-                });
-        List<Product> posts = db.getAllProducts();
-
-        StringBuffer sb = new StringBuffer();
-        for (Product p : posts) {
-            sb.append(p.id + " " + p.name + "\n");
-        }
-
-        TextView tv = (TextView) getView().findViewById(R.id.text_home);
-        tv.setText(sb.toString());
-
-        super.onActivityCreated(savedInstanceState);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
