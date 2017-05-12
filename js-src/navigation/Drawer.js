@@ -1,12 +1,26 @@
 import { DrawerNavigator } from 'react-navigation'
 import { AppColors } from '@theme/'
 import HomeStack from '@nav/HomeStack'
+import PricingAnalysisStack from '@nav/PricingAnalysisStack'
+import BidAnalysisStack from '@nav/BidAnalysisStack'
 
 const Drawer = DrawerNavigator({
   HomeStack: {
     screen: HomeStack,
     navigationOptions: {
       drawerLabel: 'Home'
+    }
+  },
+  PricingAnalysisStack: {
+    screen: PricingAnalysisStack,
+    navigationOptions: {
+      drawerLabel: 'PricingAnalysis'
+    }
+  },
+  BidAnalysisStack: {
+    screen: BidAnalysisStack,
+    navigationOptions: {
+      drawerLabel: 'BidAnalysis'
     }
   }
 }, {
