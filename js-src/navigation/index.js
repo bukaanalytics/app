@@ -1,69 +1,15 @@
 import React, { Component } from 'react'
-import { TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux';
-import { DrawerItems, DrawerNavigator, StackNavigator, addNavigationHelpers } from 'react-navigation';
-import Icon from 'react-native-vector-icons/MaterialIcons'
+import { StackNavigator, addNavigationHelpers } from 'react-navigation';
 
-import HomeScreen from '@screen/Home/HomeContainer'
+import Drawer from '@nav/Drawer'
+import navOptions from '@nav/NavOptions'
 import LoginScreen from '@screen/Login/LoginContainer'
-import ExampleScreen from '@screen/Example/ExampleContainer'
 import { AppColors } from '@theme/'
-
-const navOptions = ({navigation}) => ({
-      title: 'BukaAnalytics',
-      headerTintColor: 'white',
-      headerStyle: { backgroundColor: AppColors.brand.primary },
-      headerLeft: (
-        <TouchableOpacity
-          onPress={() => navigation.navigate('DrawerOpen')}
-          style={{justifyContent: 'center', alignItems: 'center', padding: 8, paddingTop: 12}}>
-          <Icon name='menu' color='white' size={30} />
-        </TouchableOpacity>
-      )
-    })
-
-const HomeStack = StackNavigator({
-  Home: {
-    screen: HomeScreen
-  },
-  Example: {
-    screen: ExampleScreen
-  }
-}, {
-  navigationOptions: navOptions
-})
-
-const ExampleStack = StackNavigator({
-  Example: {
-    screen: ExampleScreen
-  }
-}, {
-  navigationOptions: navOptions
-})
-
-const DrawerScreen = DrawerNavigator({
-  HomeStack: {
-    screen: HomeStack
-  },
-  ExampleStack: {
-    screen: ExampleStack
-  }
-}, {
-  contentOptions: {
-    activeTintColor: '#fff',
-    inactiveTintColor: '#fff',
-    activeBackgroundColor: AppColors.brand.secondary,
-    style: {
-      flex: 1,
-      backgroundColor: AppColors.brand.primary,
-      paddingTop: 0
-    }
-  }
-});
 
 export const AppNavigator = StackNavigator({
   DrawerScreen: {
-    screen: DrawerScreen
+    screen: Drawer
   },
   LoginScreen: {
     screen: LoginScreen
