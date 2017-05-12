@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 
 // Actions
 
-import Login from './LoginView'
+import PricingAnalysis from './PricingAnalysisView'
 
 const mapStateToProps = (state) => ({
 });
@@ -10,4 +10,4 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login)
+export default connect(mapStateToProps, mapDispatchToProps)(PricingAnalysis)
