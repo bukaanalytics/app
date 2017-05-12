@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux';
-import { DrawerItems, DrawerNavigator, StackNavigator, NavigationActions, addNavigationHelpers } from 'react-navigation';
+import { DrawerItems, DrawerNavigator, StackNavigator, addNavigationHelpers } from 'react-navigation';
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import HomeScreen from '@screen/Home/HomeContainer'
+import LoginScreen from '@screen/Login/LoginContainer'
 import ExampleScreen from '@screen/Example/ExampleContainer'
 import { AppColors } from '@theme/'
 
@@ -40,7 +41,7 @@ const ExampleStack = StackNavigator({
   navigationOptions: navOptions
 })
 
-export const AppNavigator = DrawerNavigator({
+const DrawerScreen = DrawerNavigator({
   HomeStack: {
     screen: HomeStack
   },
@@ -59,6 +60,19 @@ export const AppNavigator = DrawerNavigator({
     }
   }
 });
+
+export const AppNavigator = StackNavigator({
+  DrawerScreen: {
+    screen: DrawerScreen
+  },
+  LoginScreen: {
+    screen: LoginScreen
+  }
+}, {
+  navigationOptions: {
+    header: null
+  }
+})
 
 class AppWithNavigationState extends Component {
   render() {
