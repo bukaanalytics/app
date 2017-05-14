@@ -1,5 +1,7 @@
 *.iml
-.gradle
+# Somehow it ignores .gradle, fix it by removing .gradle from gitignore - fawwaz
+#.gradle
+
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
@@ -8,6 +10,8 @@
 /captures
 .externalNativeBuild
 
+# Added by Fawwaz
+node_modules
 
 # Below created by gitignore
 # Created by https://www.gitignore.io/api/android,androidstudio
