@@ -1,14 +1,28 @@
 import React, { Component } from 'react'
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { AppColors, AppSizes, AppStyles } from '@theme/'
 import Icon from 'react-native-vector-icons/MaterialIcons'
+
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
+const viewStatWidth = (screenWidth-40)/7 // -40 karena paddingHorizontal
 
 class Home extends Component {
   constructor(props) {
     super(props)
   }
 
+  renderViewStat = (item, index) => {
+    return (
+      <View key={index} style={{width: viewStatWidth, justifyContent: 'center', alignItems: 'center', marginTop: 16}}>
+        <View style={{alignSelf: 'center', backgroundColor: AppColors.brand.primary, width: item, height: item, borderRadius: item/2}}></View>
+      </View>
+    )
+  }
+
   render() {
+    let maxViewStat = Math.max(...viewStat)
+    let viewStatDiameters = viewStat.map((item) => item*80/maxViewStat)
+
     return (
       <ScrollView style={AppStyles.flex1}>
         {/* Date Header */}
@@ -46,10 +60,27 @@ class Home extends Component {
         </View>
 
         <Text style={styles.sectionTitle}>User Views by Day</Text>
+        <View style={styles.viewStatSectionContainer}>
+          <View style={styles.viewStatContainer}>
+            <Text style={styles.viewStatDay}>Senin</Text>
+            <Text style={styles.viewStatDay}>Selasa</Text>
+            <Text style={styles.viewStatDay}>Rabu</Text>
+            <Text style={styles.viewStatDay}>Kamis</Text>
+            <Text style={styles.viewStatDay}>Jumat</Text>
+            <Text style={styles.viewStatDay}>Sabtu</Text>
+            <Text style={styles.viewStatDay}>Minggu</Text>
+          </View>
+          <View style={styles.viewStatContainer}>
+            { viewStatDiameters.map(this.renderViewStat) }
+          </View>
+        </View>
       </ScrollView>
     )
   }
 }
+
+// To be replaced by dynamic data
+const viewStat = [12, 15, 20, 8, 22, 30, 45]
 
 const styles = {
   centeredH3: {
@@ -90,6 +121,20 @@ const styles = {
     backgroundColor: AppColors.brand.accent,
     padding: 4,
     borderRadius: 16
+  },
+  viewStatSectionContainer: {
+    ...AppStyles.paddingHorizontal,
+    ...AppStyles.paddingVertical,
+    backgroundColor: AppColors.background
+  },
+  viewStatContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center'
+  },
+  viewStatDay: {
+    ...AppStyles.textCenterAligned,
+    width: viewStatWidth // -40 karena paddingHorizontal
   }
 }
 
