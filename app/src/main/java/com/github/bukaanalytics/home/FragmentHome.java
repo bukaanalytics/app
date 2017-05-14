@@ -3,12 +3,14 @@ package com.github.bukaanalytics.home;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.bukaanalytics.R;
+import com.github.bukaanalytics.common.model.BukaAnalyticsSqliteOpenHelper;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -92,16 +94,28 @@ public class FragmentHome extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        int activeUserId = 9925909;
+
+        final BukaAnalyticsSqliteOpenHelper db = BukaAnalyticsSqliteOpenHelper.getInstance(getContext());
+        db.fetchUsers(getContext());
+        db.fetchProductsAndStats(activeUserId, getContext());
+
+        super.onActivityCreated(savedInstanceState);
+    }
+
+
+        /**
+         * This interface must be implemented by activities that contain this
+         * fragment to allow an interaction in this fragment to be communicated
+         * to the activity and potentially other fragments contained in that
+         * activity.
+         * <p>
+         * See the Android Training lesson <a href=
+         * "http://developer.android.com/training/basics/fragments/communicating.html"
+         * >Communicating with Other Fragments</a> for more information.
+         */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
