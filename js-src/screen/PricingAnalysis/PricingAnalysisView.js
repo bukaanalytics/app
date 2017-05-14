@@ -5,6 +5,7 @@ import { AppStyles } from '@theme/';
 import { Alerts, Button, Card, Spacer, Text } from '@components/ui/';
 import FormWrapper from 'tcomb-form-native';
 import _ from 'lodash';
+import Icon from 'react-native-vector-icons/FontAwesome'
 
 const FormWrapperStyle = _.cloneDeep(FormWrapper.form.Form.stylesheet);
 FormWrapperStyle.textbox.normal.backgroundColor = '#FFFFFF';
@@ -12,6 +13,9 @@ FormWrapperStyle.textbox.error.backgroundColor = '#FFFFFF';
 FormWrapperStyle.textbox.normal.justifyContent = 'flex-start';
 FormWrapperStyle.textbox.normal.alignItems = 'center';
 FormWrapperStyle.textbox.normal.margin = 10;
+FormWrapperStyle.textbox.normal.width = 290;
+FormWrapperStyle.textbox.error.width = 290;
+
 
 const FORM_FIELDS = FormWrapper.struct({
   search: FormWrapper.String,
@@ -38,31 +42,18 @@ class PricingAnalysis extends Component{
     return (
       <View style={styles.container}>
         <SubHeader style={styles.searchbar}>
-          <Form
-            ref={(f) => { this.form = f; }}
-            type={FORM_FIELDS}
-            options={FORM_OPTIONS}
-          />
-        </SubHeader>
-        <SubHeader>
+          <View style={{flexDirection:'row'}}>
+            <Form
+              ref={(f) => { this.form = f; }}
+              type={FORM_FIELDS}
+              options={FORM_OPTIONS}
+            />
 
-          <View style={styles.wrapperSubBar}>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={()=>{ console.log('somethng'); }}
-            >
-              <Text h1>Filter</Text>
-            </TouchableOpacity>
 
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={()=>{ console.log('somethng'); }}
-            >
-              <Text h1>Category</Text>
-            </TouchableOpacity>
+            <Icon name="filter" size={32} style={{margin: 10}} />
           </View>
-
         </SubHeader>
+
         <ScrollView style={[AppStyles.container]}>
 
           <View style={[AppStyles.paddingHorizontal]}>
