@@ -7,6 +7,8 @@ import FormWrapper from 'tcomb-form-native';
 import _ from 'lodash';
 import Icon from 'react-native-vector-icons/FontAwesome'
 
+import { Bar } from 'react-native-pathjs-charts';
+
 const FormWrapperStyle = _.cloneDeep(FormWrapper.form.Form.stylesheet);
 FormWrapperStyle.textbox.normal.backgroundColor = '#FFFFFF';
 FormWrapperStyle.textbox.error.backgroundColor = '#FFFFFF';
@@ -38,6 +40,76 @@ class PricingAnalysis extends Component{
   render() {
     const Form = FormWrapper.form.Form;
 
+    let data = [
+      [{
+        "v": 49,
+        "name": "apple"
+      }, {
+        "v": 42,
+        "name": "apple"
+      }],
+      [{
+        "v": 69,
+        "name": "banana"
+      }, {
+        "v": 62,
+        "name": "banana"
+      }],
+      [{
+        "v": 29,
+        "name": "grape"
+      }, {
+        "v": 15,
+        "name": "grape"
+      }]
+    ];
+
+    let options = {
+      width: 300,
+      height: 300,
+      margin: {
+        top: 20,
+        left: 25,
+        bottom: 50,
+        right: 20
+      },
+      color: '#2980B9',
+      gutter: 20,
+      animate: {
+        type: 'oneByOne',
+        duration: 200,
+        fillTransition: 3
+      },
+      axisX: {
+        showAxis: true,
+        showLines: true,
+        showLabels: true,
+        showTicks: true,
+        zeroAxis: false,
+        orient: 'bottom',
+        label: {
+          fontFamily: 'Arial',
+          fontSize: 8,
+          fontWeight: true,
+          fill: '#34495E'
+        }
+      },
+      axisY: {
+        showAxis: true,
+        showLines: true,
+        showLabels: true,
+        showTicks: true,
+        zeroAxis: false,
+        orient: 'left',
+        label: {
+          fontFamily: 'Arial',
+          fontSize: 8,
+          fontWeight: true,
+          fill: '#34495E'
+        }
+      }
+    };
+
 
     return (
       <View style={styles.container}>
@@ -65,9 +137,8 @@ class PricingAnalysis extends Component{
             activeOpacity={0.8}
             onPress={()=>{ console.log('somethng'); }}
           >
-            <Card
-              image={{ uri: 'http://wp-api.mcnam.ee/wp-content/uploads/2016/10/brekkie-crumble-33651_l.jpeg' }}
-            >
+            <Card>
+              <Bar data={data} options={options} accessorKey='v'/>
               <View style={[AppStyles.paddingLeftSml, AppStyles.paddingBottomSml]}>
                 <Text h3>Title of post</Text>
                 <Text>

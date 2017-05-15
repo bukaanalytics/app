@@ -10,6 +10,7 @@ import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.shell.MainReactPackage;
 import com.github.bukaanalytics.BuildConfig;
+import com.horcrux.svg.RNSvgPackage;
 
 import org.pgsqlite.SQLitePluginPackage;
 
@@ -32,6 +33,7 @@ public class MyReactActivity extends Activity implements DefaultHardwareBackBtnH
                 .setJSMainModuleName("index.android")
                 .addPackage(new MainReactPackage())
                 .addPackage(new SQLitePluginPackage())
+                .addPackage(new RNSvgPackage())
                 .setUseDeveloperSupport(BuildConfig.DEBUG)
                 .setInitialLifecycleState(
                         LifecycleState.RESUMED)
