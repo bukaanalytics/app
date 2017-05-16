@@ -3,6 +3,7 @@ import { Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-nati
 import { AppColors, AppSizes, AppStyles } from '@theme/'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { Pie } from 'react-native-pathjs-charts'
+import Table from 'react-native-simple-table';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
 const viewStatWidth = (screenWidth-40)/7 // -40 karena paddingHorizontal
@@ -104,6 +105,16 @@ class Home extends Component {
           }}
           />
         </View>
+
+        <Text style={styles.sectionTitle}>Most Viewed Product</Text>
+        <View style={styles.overviewContainer}>
+          <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource} />
+        </View>
+
+        <Text style={styles.sectionTitle}>Least Viewed Product</Text>
+        <View style={styles.overviewContainer}>
+          <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource} />
+        </View>
       </ScrollView>
     )
   }
@@ -150,6 +161,40 @@ const options = {
         color: '#ECF0F1'
       }
     }
+const columns = [
+  {
+    title: 'Item',
+    dataIndex: 'item',
+    width: AppSizes.widthThird-40,
+  },
+  {
+    title: 'View',
+    dataIndex: 'view',
+    width: AppSizes.widthThird-40,
+  },
+  {
+    title: 'Avg. Market View',
+    dataIndex: 'avg',
+    width: AppSizes.widthThird-40,
+  }
+];
+const dataSource = [{
+  item: 'Item A',
+  view: 500,
+  avg: 450
+}, {
+  item: 'Item B',
+  view: 400,
+  avg: 394
+}, {
+  item: 'Item C',
+  view: 300,
+  avg: 145
+}, {
+  item: 'Item D',
+  view: 120,
+  avg: 254
+}]
 
 const styles = {
   centeredH3: {
