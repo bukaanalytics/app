@@ -1,5 +1,7 @@
 *.iml
-.gradle
+# Somehow it ignores .gradle, fix it by removing .gradle from gitignore - fawwaz
+#.gradle
+
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries

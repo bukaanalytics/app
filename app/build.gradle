@@ -40,6 +40,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
     compile 'com.facebook.react:react-native:+'
+    compile project(':react-native-svg')
     compile project(':react-native-sqlite-storage')
     compile project(':react-native-vector-icons')
 }
