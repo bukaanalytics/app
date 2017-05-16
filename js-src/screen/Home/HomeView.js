@@ -21,7 +21,7 @@ class Home extends Component {
 
   render() {
     let maxViewStat = Math.max(...viewStat)
-    let viewStatDiameters = viewStat.map((item) => item*80/maxViewStat)
+    let viewStatDiameters = viewStat.map((item) => item*viewStatWidth/maxViewStat)
 
     return (
       <ScrollView style={AppStyles.flex1}>
@@ -35,10 +35,10 @@ class Home extends Component {
             </View>
           </View>
           <View style={AppStyles.row}>
-            <TouchableOpacity style={AppStyles.padding}>
+            <TouchableOpacity style={[AppStyles.paddingVertical, {paddingRight: 4}]}>
               <Icon name="keyboard-arrow-left" size={36} />
             </TouchableOpacity>
-            <TouchableOpacity style={AppStyles.padding}>
+            <TouchableOpacity style={[AppStyles.paddingVertical, {paddingLeft: 4}]}>
               <Icon name="keyboard-arrow-right" size={36} />
             </TouchableOpacity>
           </View>
@@ -89,12 +89,13 @@ const styles = {
   },
   centeredStat: {
     ...AppStyles.textCenterAligned,
-    fontSize: 56
+    fontSize: 48
   },
   dateHeaderContainer: {
     ...AppStyles.spreadHorizontalContainer,
-    ...AppStyles.padding, 
-    backgroundColor: AppColors.brand.lightPrimary
+    ...AppStyles.paddingHorizontal, 
+    backgroundColor: AppColors.brand.lightPrimary,
+    elevation: 4
   },
   overviewContainer: {
     ...AppStyles.row,
@@ -103,24 +104,27 @@ const styles = {
     backgroundColor: AppColors.background
   },
   sectionTitle: {
-    ...AppStyles.h1,
+    ...AppStyles.h2,
     ...AppStyles.padding
   },
   statContainer: {
-    ...AppStyles.flex1,
-    ...AppStyles.paddingHorizontal
+    ...AppStyles.flex1
   },
   statusTagOk: {
     ...AppStyles.textCenterAligned,
     backgroundColor: AppColors.brand.success,
     padding: 4,
-    borderRadius: 16
+    borderRadius: 16,
+    marginHorizontal: 4,
+    fontSize: 10
   },
   statusTagWarning: {
     ...AppStyles.textCenterAligned,
     backgroundColor: AppColors.brand.accent,
     padding: 4,
-    borderRadius: 16
+    borderRadius: 16,
+    marginHorizontal: 4,
+    fontSize: 10
   },
   viewStatSectionContainer: {
     ...AppStyles.paddingHorizontal,
@@ -134,7 +138,8 @@ const styles = {
   },
   viewStatDay: {
     ...AppStyles.textCenterAligned,
-    width: viewStatWidth // -40 karena paddingHorizontal
+    width: viewStatWidth,
+    fontSize: 10
   }
 }
 
