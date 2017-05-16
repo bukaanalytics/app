@@ -1,5 +1,8 @@
 apply plugin: 'com.android.application'
 
+apply from: "../node_modules/react-native/react.gradle"
+apply from: "../node_modules/react-native-vector-icons/fonts.gradle"
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -17,6 +20,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    configurations.all {
+        resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.0'
+    }
 }
 
 dependencies {
@@ -30,6 +37,8 @@ dependencies {
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    compile 'com.facebook.react:react-native:0.39.2'
+    compile 'com.facebook.react:react-native:+'
+    compile project(':react-native-svg')
     compile project(':react-native-sqlite-storage')
+    compile project(':react-native-vector-icons')
 }
