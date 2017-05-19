@@ -15,9 +15,6 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.R.attr.apiKey;
-import static android.provider.Contacts.SettingsColumns.KEY;
-
 /**
  * Created by fawwaz.muhammad on 05/05/17.
  */
@@ -211,14 +208,14 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
         }
     }
 
-    public List<Product> getAllProducts() {
-        List<Product> posts = new ArrayList<>();
+    public List<Product> getProducts(int userId) {
+        List<Product> products = new ArrayList<>();
 
         // SELECT * FROM POSTS
         // LEFT OUTER JOIN USERS
         // ON POSTS.KEY_POST_USER_ID_FK = USERS.KEY_USER_ID
         String PRODUCTS_SELECT_QUERY =
-                String.format("SELECT * FROM %s ", TABLE_PRODUCTS);
+                String.format("SELECT * FROM %s WHERE %s = %d", TABLE_PRODUCTS, KEY_PRODUCT_SELLERID, userId);
 
         // "getReadableDatabase()" and "getWriteableDatabase()" return the same object (except under low
         // disk space scenarios)
@@ -231,17 +228,50 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
                                                         cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_NAME)),
                                                         cursor.getInt(cursor.getColumnIndex(KEY_PRODUCT_PRICE)),
                                                         cursor.getInt(cursor.getColumnIndex(KEY_PRODUCT_SELLERID)));
-                    posts.add(newProduct);
+                    products.add(newProduct);
                 } while(cursor.moveToNext());
             }
         } catch (Exception e) {
-            Log.d(TAG, "Error while trying to get posts from database");
+            Log.d(TAG, "Error while trying to get products from database");
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
         }
-        return posts;
+        return products;
+    }
+
+    public List<Stat> getStats(String productId) {
+        List<Stat> stats = new ArrayList<>();
+
+        String STATS_SELECT_QUERY =
+                String.format("SELECT * FROM %s WHERE %s = '%s'", TABLE_STATS, KEY_STAT_PRODUCTID, productId);
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(STATS_SELECT_QUERY, null);
+        try {
+            if (cursor.moveToFirst()) {
+                do {
+                    Stat newStat = new Stat(cursor.getString(cursor.getColumnIndex(KEY_STAT_DATE)),
+                            cursor.getString(cursor.getColumnIndex(KEY_STAT_DAYNAME)),
+                            cursor.getString(cursor.getColumnIndex(KEY_STAT_PRODUCTID)),
+                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_VIEWCOUNT)),
+                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_VIEWTOTAL)),
+                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_SOLDCOUNT)),
+                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_SOLDTOTAL)),
+                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_INTERESTCOUNT)),
+                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_INTERESTTOTAL)));
+                    stats.add(newStat);
+                } while(cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Error while trying to get stats from database");
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+        return stats;
     }
 
     public void fetchUsers(final Context context) {
@@ -262,6 +292,25 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
                     }
                 }
             });
+    }
+
+    public void fetchUser(int userId, final Context context) {
+
+        HTTPRequestHelper httpRequestHelper = new HTTPRequestHelper();
+        httpRequestHelper.getAsJSONArray("https://api.mlab.com/api/1/databases/bukaanalytics/collections/users?q={'seller_id':" + userId + "}&apiKey=" + MLAB_API_KEY,
+                context.getApplicationContext(), new HTTPRequestHelper.JSONArrayCallback() {
+                    @Override
+                    public void onCompleted(Exception e, JsonArray result) {
+                        BukaAnalyticsSqliteOpenHelper db = BukaAnalyticsSqliteOpenHelper.getInstance(context);
+
+                        JsonObject product = result.get(0).getAsJsonObject();
+                        int id = product.get("seller_id").getAsInt();
+                        String name = product.get("name").getAsString();
+                        User newUser = new User(id, name);
+
+                        db.addUser(newUser);
+                    }
+                });
     }
 
     public void fetchProductsAndStats(int userId, final Context context) {

@@ -5,12 +5,18 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.github.bukaanalytics.R;
 import com.github.bukaanalytics.common.model.BukaAnalyticsSqliteOpenHelper;
+import com.github.bukaanalytics.common.model.Product;
+import com.github.bukaanalytics.common.model.Stat;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -99,8 +105,47 @@ public class FragmentHome extends Fragment {
         int activeUserId = 9925909;
 
         final BukaAnalyticsSqliteOpenHelper db = BukaAnalyticsSqliteOpenHelper.getInstance(getContext());
-        db.fetchUsers(getContext());
+        db.fetchUser(activeUserId, getContext());
         db.fetchProductsAndStats(activeUserId, getContext());
+        List<Product> products = db.getProducts(activeUserId);
+
+        StringBuffer sb = new StringBuffer();
+
+        if(products.size() > 0) {
+            List<Stat> stats0 = db.getStats(products.get(0).id);
+            List<Stat> stats1 = db.getStats(products.get(1).id);
+            List<Stat> stats2 = db.getStats(products.get(2).id);
+
+            if(stats0 != null && stats0.size() > 0) {
+                sb.append(products.get(0).id + "\n");
+                for (Stat s : stats0) {
+                    sb.append(String.format("%s %d %d %d %d %d %d \n", s.date, s.viewCount, s.totalViewCount, s.soldCount, s.totalSoldCount, s.interestCount, s.totalInterestCount));
+                }
+                sb.append("\n");
+            }
+
+            if(stats1 != null && stats1.size() > 0) {
+                sb.append(products.get(1).id + "\n");
+                for (Stat s : stats1) {
+                    sb.append(String.format("%s %d %d %d %d %d %d \n", s.date, s.viewCount, s.totalViewCount, s.soldCount, s.totalSoldCount, s.interestCount, s.totalInterestCount));
+                }
+                sb.append("\n");
+            }
+
+            if(stats2 != null && stats2.size() > 0) {
+                sb.append(products.get(2).id + "\n");
+                for (Stat s : stats2) {
+                    sb.append(String.format("%s %d %d %d %d %d %d \n", s.date, s.viewCount, s.totalViewCount, s.soldCount, s.totalSoldCount, s.interestCount, s.totalInterestCount));
+                }
+                sb.append("\n");
+            }
+        }
+
+        TextView tv = (TextView) getView().findViewById(R.id.text_home);
+        tv.setText(sb.toString());
+        tv.setMovementMethod(new ScrollingMovementMethod());
+
+
 
         super.onActivityCreated(savedInstanceState);
     }
