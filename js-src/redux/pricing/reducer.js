@@ -19,7 +19,7 @@ const initialState = {
 export default function userReducer(state = initialState, action) {
   switch (action.type) {
     case PRICING_ACTION_SET : {
-      const { min_price, max_price, avg_price, best_price, graph } = action.result;
+      const { min_price, max_price, avg_price, best_price, graph } = action.data;
       return { ...state, max_price, min_price, avg_price, best_price, graph };
     }
     case PRICING_ACTION_FILTER :

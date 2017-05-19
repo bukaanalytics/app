@@ -1,3 +1,4 @@
+import axios from 'axios';
 import BLApi from '../../lib/BLApi';
 import {
   PRICING_ACTION_SET,
@@ -51,14 +52,18 @@ export function getGraph(keyword, filter = null) {
     // set loading
     dispatch(fetching(true));
 
-    return Promise.all(promises).then(datas => {
-      // tell ui component that fetching is completed
+    return axios.all(promises).then(responses => {
       dispatch(fetching(false));
       dispatch(calculating(true));
 
+      // tell ui component that fetching is completed
+      const tmp_resp = responses.map(r => r.data);
+
       // collecting all datas
-      const prices = [];
-      datas.forEach(data => prices.concat(data));
+      let prices = [];
+      tmp_resp.forEach(t => {
+        prices = prices.concat(BLApi.parsePrice(t));
+      });
 
       const result = BLApi.mathAnalysis(prices);
 

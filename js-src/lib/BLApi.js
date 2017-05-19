@@ -1,4 +1,4 @@
-import request from 'superagent';
+import axios from 'axios';
 
 const API_PRODUCTS = 'https://api.bukalapak.com/v2/products.json';
 
@@ -7,10 +7,8 @@ class BLApi {
   // Api call related functions
   // =============================
   static getProducts(page, keyword) {
-    return new Promise((resolve, reject) => {
-      request.get(API_PRODUCTS)
-      .timeout(30000)
-      .query({
+    return axios.get(API_PRODUCTS, {
+      params: {
         page: page || 0,
         per_page: 24,
         keywords: keyword || '',
@@ -20,18 +18,7 @@ class BLApi {
         // price_min: filter.price_min || 0,
         // price_max: filter.price_max || 99999999999,
         // sort_by: filter.sort_by || 'Termurah', // Termahal, Terbaru, Acak
-      })
-      .end((err, res) => {
-        if (err) {
-          reject(err);
-        }
-        console.log(res);
-        const parsedPrice = this.parsePrice(JSON.parse(res.text));
-        resolve(parsedPrice);
-      })
-      .catch(err => {
-        reject(err);
-      });
+      },
     });
   }
 
@@ -50,7 +37,7 @@ class BLApi {
 
     const num_class_interval = Math.round(1 + 3.3 * Math.log10(prices.length));
     const range = max_price - min_price;
-
+    console.log(this);
     const summary = this.initSummary(num_class_interval);
 
     for (let i = prices.length - 1; i >= 0; i--) {
@@ -79,7 +66,7 @@ class BLApi {
     const best_price = summary[best_price_index].avg_price;
 
     //generategraphdata
-    const graph = this.generategraphdata(summary, num_class_interval);
+    const graph = this.generateGraphData(summary, num_class_interval);
 
     // calculate avg_price
     avg_price = avg_price / prices.length;
@@ -99,7 +86,7 @@ class BLApi {
   // =============================
   // Private functions
   // =============================
-  parsePrice(succ) {
+  static parsePrice(succ) {
     const prices = [];
     if (succ.products) {
       const products = succ.products;
@@ -114,7 +101,7 @@ class BLApi {
     return prices;
   }
 
-  checkClassRange(value, min_value, range_max_min, num_class) {
+  static checkClassRange(value, min_value, range_max_min, num_class) {
     const percentage = (value - min_value) / range_max_min;
     for (let i = num_class - 1; i >= 0; i--) {
       const j = i + 1;
@@ -127,7 +114,7 @@ class BLApi {
     return num_class;
   }
 
-  initSummary(num_class) {
+  static initSummary(num_class) {
     const summary = {};
     for (let i = 1; i < num_class + 1; i++) {
       const text = `_${i}`;
@@ -140,7 +127,7 @@ class BLApi {
     return summary;
   }
 
-  findBestPrice(profit) {
+  static findBestPrice(profit) {
     let first_time = true;
     let max_key = null;
     for (const key in profit) {
@@ -158,10 +145,10 @@ class BLApi {
     return max_key;
   }
 
-  generateGraphData(summary, num_class) {
+  static generateGraphData(summary, num_class) {
     const graph = [];
     for (let i = 0; i < num_class; i++) {
-      const text = `_${i}`;
+      const text = `_${i + 1}`;
       graph.push({
         name: text,
         v: summary[text].count,

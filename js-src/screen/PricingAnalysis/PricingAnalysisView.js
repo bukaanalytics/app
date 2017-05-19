@@ -48,43 +48,70 @@ class PricingAnalysis extends Component{
     this.props.getGraph(form.search);
   }
 
-  render() {
-    const Form = FormWrapper.form.Form;
-
+  renderbar(){
     let data = [
       [{
-        "v": 49,
-        "name": "apple"
-      }, {
-        "v": 42,
-        "name": "apple"
+        "v": 1,
+        "name": "1"
       }],
       [{
-        "v": 69,
-        "name": "banana"
-      }, {
-        "v": 62,
-        "name": "banana"
+        "v": 1,
+        "name": "2"
       }],
       [{
-        "v": 29,
-        "name": "grape"
-      }, {
-        "v": 15,
-        "name": "grape"
+        "v": 1,
+        "name": "3"
+      }],
+      [{
+        "v": 1,
+        "name": "4"
+      }],
+      [{
+        "v": 1,
+        "name": "5"
+      }],
+      [{
+        "v": 1,
+        "name": "6"
+      }],
+      [{
+        "v": 1,
+        "name": "7"
+      }],
+      [{
+        "v": 1,
+        "name": "8"
+      }],
+      [{
+        "v": 1,
+        "name": "9"
+      }],
+      [{
+        "v": 1,
+        "name": "10"
       }]
     ];
 
+    const graphdata = this.props.graph;
+    if (graphdata.length > 0) {
+      let test_data = [];
+      graphdata.forEach(g => {
+        console.log(g);
+        test_data.push([g]);
+      });
+      data = test_data;
+    }
+
     let options = {
-      width: 300,
-      height: 300,
+      width: 220,
+      height: 220,
       margin: {
         top: 20,
         left: 25,
         bottom: 50,
         right: 20
       },
-      color: '#2980B9',
+      color: '#D71149',
       gutter: 20,
       animate: {
         type: 'oneByOne',
@@ -121,7 +148,16 @@ class PricingAnalysis extends Component{
       }
     };
 
+    if(this.props.graph.length > 0 ) {
+      return <Bar data={data} options={options} accessorKey='v'/>
+    }else{
+      return <Text h4>Start searching a keyword</Text>
+    }
+  }
 
+  render() {
+    const Form = FormWrapper.form.Form;
+    const Bar = this.renderbar();
     return (
       <View style={styles.container}>
         <SubHeader style={styles.searchbar}>
@@ -149,12 +185,8 @@ class PricingAnalysis extends Component{
             onPress={()=>{ console.log('somethng'); }}
           >
             <Card>
-              <Bar data={data} options={options} accessorKey='v'/>
+              { Bar }
               <View style={[AppStyles.paddingLeftSml, AppStyles.paddingBottomSml]}>
-                <Text h3>Title of post</Text>
-                <Text>
-                  seharusnya ini diagram , nanti aing lagi cari librarynya
-                </Text>
               </View>
             </Card>
           </TouchableOpacity>
@@ -172,7 +204,7 @@ class PricingAnalysis extends Component{
                 </View>
                 <View style={styles.infoText}>
                   <Text h4>Termahal</Text>
-                  <Text h3> this.props.max_price </Text>
+                  <Text h3> {this.props.max_price} </Text>
                 </View>
               </View>
 
@@ -180,7 +212,7 @@ class PricingAnalysis extends Component{
                 <View style={styles.wrapperText}>
                   <View style={styles.infoText}>
                     <Text h2>Terbaik</Text>
-                    <Text h1> this.props.best_price </Text>
+                    <Text h1> {this.props.best_price} </Text>
                   </View>
                 </View>
               </View>
