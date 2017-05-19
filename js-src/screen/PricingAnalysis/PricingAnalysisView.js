@@ -23,18 +23,29 @@ const FORM_FIELDS = FormWrapper.struct({
   search: FormWrapper.String,
 });
 
-const FORM_OPTIONS = {
-  auto: 'placeholders',
-  stylesheet: FormWrapperStyle,
-};
-
 class PricingAnalysis extends Component{
+
   static navigationOptions = {
     title: 'Example',
   };
 
   constructor(props) {
     super(props)
+  }
+
+  FORM_OPTIONS = {
+    auto: 'placeholders',
+    stylesheet: FormWrapperStyle,
+    fields: {
+      search: {
+        onSubmitEditing: this.submitForm.bind(this),
+      }
+    }
+  }
+
+  submitForm(){
+    const form = this.form.getValue();
+    this.props.getGraph(form.search);
   }
 
   render() {
@@ -116,9 +127,9 @@ class PricingAnalysis extends Component{
         <SubHeader style={styles.searchbar}>
           <View style={{flexDirection:'row'}}>
             <Form
-              ref={(f) => { this.form = f; }}
+              ref={f => this.form = f}
               type={FORM_FIELDS}
-              options={FORM_OPTIONS}
+              options={this.FORM_OPTIONS}
             />
 
 
@@ -153,15 +164,15 @@ class PricingAnalysis extends Component{
               <View style={styles.wrapperText}>
                 <View style={styles.infoText}>
                   <Text h4>Terendah</Text>
-                  <Text h3> 10K </Text>
+                  <Text h3> {this.props.min_price} </Text>
                 </View>
                 <View style={styles.infoText}>
                   <Text h4>Rata-Rata</Text>
-                  <Text h3> 20K </Text>
+                  <Text h3> {this.props.avg_price} </Text>
                 </View>
                 <View style={styles.infoText}>
                   <Text h4>Termahal</Text>
-                  <Text h3> 30K </Text>
+                  <Text h3> this.props.max_price </Text>
                 </View>
               </View>
 
@@ -169,7 +180,7 @@ class PricingAnalysis extends Component{
                 <View style={styles.wrapperText}>
                   <View style={styles.infoText}>
                     <Text h2>Terbaik</Text>
-                    <Text h1> 20K </Text>
+                    <Text h1> this.props.best_price </Text>
                   </View>
                 </View>
               </View>
