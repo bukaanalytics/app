@@ -45,6 +45,7 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
     // Stat Table Columns
     private static final String KEY_STAT_ID = "id";
     private static final String KEY_STAT_DATE = "date";
+    private static final String KEY_STAT_DATEEPOCH = "date_epoch";
     private static final String KEY_STAT_DAYNAME = "day_name";
     private static final String KEY_STAT_PRODUCTID = "product_id";
     private static final String KEY_STAT_VIEWCOUNT = "view_count";
@@ -86,6 +87,7 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
                 "(" +
                 KEY_STAT_ID + " INTEGER PRIMARY KEY," +
                 KEY_STAT_DATE + " TEXT," +
+                KEY_STAT_DATEEPOCH + " INTEGER," +
                 KEY_STAT_DAYNAME + " TEXT," +
                 KEY_STAT_PRODUCTID + " TEXT," +
                 KEY_STAT_VIEWCOUNT + " INTEGER," +
@@ -132,6 +134,7 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
         try {
             ContentValues values = new ContentValues();
             values.put(KEY_STAT_DATE, stat.date);
+            values.put(KEY_STAT_DATEEPOCH, stat.dateEpoch);
             values.put(KEY_STAT_DAYNAME, stat.dayName);
             values.put(KEY_STAT_PRODUCTID, stat.productId);
             values.put(KEY_STAT_VIEWCOUNT, stat.viewCount);
@@ -222,14 +225,16 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(PRODUCTS_SELECT_QUERY, null);
         try {
-            if (cursor.moveToFirst()) {
-                do {
-                    Product newProduct = new Product(cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_ID)),
-                                                        cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_NAME)),
-                                                        cursor.getInt(cursor.getColumnIndex(KEY_PRODUCT_PRICE)),
-                                                        cursor.getInt(cursor.getColumnIndex(KEY_PRODUCT_SELLERID)));
-                    products.add(newProduct);
-                } while(cursor.moveToNext());
+            if(cursor != null && cursor.getCount() > 0) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        Product newProduct = new Product(cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_ID)),
+                                cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_NAME)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_PRODUCT_PRICE)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_PRODUCT_SELLERID)));
+                        products.add(newProduct);
+                    } while(cursor.moveToNext());
+                }
             }
         } catch (Exception e) {
             Log.d(TAG, "Error while trying to get products from database");
@@ -250,22 +255,25 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(STATS_SELECT_QUERY, null);
         try {
-            if (cursor.moveToFirst()) {
-                do {
-                    Stat newStat = new Stat(cursor.getString(cursor.getColumnIndex(KEY_STAT_DATE)),
-                            cursor.getString(cursor.getColumnIndex(KEY_STAT_DAYNAME)),
-                            cursor.getString(cursor.getColumnIndex(KEY_STAT_PRODUCTID)),
-                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_VIEWCOUNT)),
-                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_VIEWTOTAL)),
-                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_SOLDCOUNT)),
-                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_SOLDTOTAL)),
-                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_INTERESTCOUNT)),
-                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_INTERESTTOTAL)));
-                    stats.add(newStat);
-                } while(cursor.moveToNext());
+            if(cursor != null && cursor.getCount() > 0) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        Stat newStat = new Stat(cursor.getString(cursor.getColumnIndex(KEY_STAT_DATE)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_DATEEPOCH)),
+                                cursor.getString(cursor.getColumnIndex(KEY_STAT_DAYNAME)),
+                                cursor.getString(cursor.getColumnIndex(KEY_STAT_PRODUCTID)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_VIEWCOUNT)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_VIEWTOTAL)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_SOLDCOUNT)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_SOLDTOTAL)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_INTERESTCOUNT)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_INTERESTTOTAL)));
+                        stats.add(newStat);
+                    } while(cursor.moveToNext());
+                }
             }
         } catch (Exception e) {
-            Log.d(TAG, "Error while trying to get stats from database");
+            Log.d(TAG, "getStats(): " + e.getMessage());
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
@@ -352,6 +360,7 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
                         for (int i = 0; i < result.size(); i++) {
                             JsonObject stat = result.get(i).getAsJsonObject();
                             String date = stat.get("date").getAsString();
+                            int dateEpoch = stat.get("date_epoch").getAsInt();
                             String dayName = stat.get("day_name").getAsString();
                             String productId = stat.get("product_id").getAsString();
                             int viewCount = stat.get("view_count").getAsInt();
@@ -360,7 +369,7 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
                             int soldTotal = stat.get("sold_total").getAsInt();
                             int interestCount = stat.get("interest_count").getAsInt();
                             int interestTotal = stat.get("interest_total").getAsInt();
-                            Stat newStat = new Stat(date, dayName, productId, viewCount, viewTotal, soldCount, soldTotal, interestCount, interestTotal);
+                            Stat newStat = new Stat(date, dateEpoch,dayName, productId, viewCount, viewTotal, soldCount, soldTotal, interestCount, interestTotal);
 
                             db.addStat(newStat);
                         }
