@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 
 // Actions
-import { toNextWeek, toPrevWeek } from '@redux/dashboard/actions'
+import { refreshData } from '@redux/dashboard/actions'
 
 import Home from './HomeView'
 
@@ -10,7 +10,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = {
-  toNextWeek, toPrevWeek
+  refreshData
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home)

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { AppColors, AppSizes, AppStyles } from '@theme/'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { Pie } from 'react-native-pathjs-charts'
@@ -12,6 +12,10 @@ const viewStatWidth = (screenWidth-40)/7 // -40 karena paddingHorizontal
 class Home extends Component {
   constructor(props) {
     super(props)
+  }
+
+  componentDidMount() {
+    this.props.refreshData()
   }
 
   getDateRange = () => {
@@ -36,6 +40,14 @@ class Home extends Component {
     let range = mondayDateStr + ' - ' + sundayDateStr
 
     return range
+  }
+
+  getRevenue= () => {
+    let { rawTransactions, fetchingTransaction } = this.props.dashboard
+
+    if (fetchingTransaction) return <ActivityIndicator style={{flex: 1}} />
+
+    return <Text style={styles.centeredStat}>{ rawTransactions.length }</Text>
   }
 
   renderViewStat = (item, index) => {
@@ -63,12 +75,12 @@ class Home extends Component {
           </View>
           <View style={AppStyles.row}>
             <TouchableOpacity style={[AppStyles.paddingVertical, {paddingRight: 4}]}
-              onPress={() => this.props.toPrevWeek()}
+              onPress={() => this.props.refreshData('prev')}
             >
               <Icon name="keyboard-arrow-left" size={36} />
             </TouchableOpacity>
             <TouchableOpacity style={[AppStyles.paddingVertical, {paddingLeft: 4}]}
-              onPress={() => this.props.toNextWeek()}
+              onPress={() => this.props.refreshData('next')}
             >
               <Icon name="keyboard-arrow-right" size={36} />
             </TouchableOpacity>
@@ -80,7 +92,7 @@ class Home extends Component {
         <View style={styles.overviewContainer}>
           <View style={styles.statContainer}>
             <Text style={styles.centeredH3}>Revenue</Text>
-            <Text style={styles.centeredStat}>400 K</Text>
+            { this.getRevenue() }
             <Text style={styles.statusTagOk}>Compared to Prev Period</Text>
           </View>
           <View style={styles.statContainer}>
