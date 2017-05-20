@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.github.bukaanalytics.common.HTTPRequestHelper;
@@ -285,6 +286,30 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
             }
         }
         return stats;
+    }
+
+    public void deleteStats(String[] productIds) {
+        if(productIds.length > 0){
+            SQLiteDatabase db = getWritableDatabase();
+
+            db.beginTransaction();
+            try {
+                String joined = TextUtils.join("\",\"",productIds);
+                String args = "\"" + joined + "\"";
+                String query = String.format("DELETE FROM %s WHERE %s IN (%s)", TABLE_STATS, KEY_STAT_PRODUCTID, args);
+                db.execSQL(query);
+
+                db.setTransactionSuccessful();
+            }
+            catch (SQLException e) {
+                Log.d(TAG, "deleteStats(), SQLException: " + e.getMessage());
+            }
+            catch (Exception e) {
+                Log.d(TAG, "deleteStats Error: " + e.getMessage());
+            } finally {
+                db.endTransaction();
+            }
+        }
     }
 
     public void fetchUsers(final Context context) {
