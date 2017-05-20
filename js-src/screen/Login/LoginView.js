@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Text, View } from 'react-native'
+import { Button, Text, ToastAndroid, View } from 'react-native'
 
 class Login extends Component{
   render() {
@@ -10,8 +10,10 @@ class Login extends Component{
           title="Login"
           onPress={() => {
             // alert('login')
-            this.props.navigation.navigate('DrawerScreen')
-            console.log(this.props.nav)
+            this.props.login('bdc_seller', 'gbolehta').then(() => {
+              if (this.props.user.token != '') this.props.navigation.navigate('DrawerScreen')
+              else ToastAndroid.show('Wrong username or password', ToastAndroid.LONG)
+            })
           }}
         />
       </View>

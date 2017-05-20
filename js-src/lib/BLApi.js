@@ -1,11 +1,52 @@
 import axios from 'axios';
+import { ToastAndroid } from 'react-native'
 
 const API_PRODUCTS = 'https://api.bukalapak.com/v2/products.json';
+const API_BASE_URL = 'https://api.bukalapak.com/v2'
 
 class BLApi {
   // =============================
   // Api call related functions
   // =============================
+  static sendApiRequest(config, onSuccess, onError) {
+    return axios(config).then(res => {
+      console.log(res)
+      switch (res.status) {
+        case 200:
+          return res.data
+          break;
+        case 410: // Gone – Consider updating your client application.
+          throw Error("Data unavailable due to unupdated application")
+          break;
+        case 500:
+          throw Error("Internal Server Error – We had a problem with our server. Try again later.")
+          break;
+        default:
+          throw Error("Unknown Error")
+          break;
+      }
+    })
+    .then(data => {
+      console.log(data)
+      onSuccess(data)
+    })
+    .catch(err => {
+      onError(err)
+      ToastAndroid.show(err.message, ToastAndroid.LONG)
+    })
+  }
+
+  static authenticateUser(data, successCallback, errorCallback) {
+    return this.sendApiRequest({
+      method: 'post',
+      url: API_BASE_URL + '/authenticate.json',
+      auth: { username: data.username, password: data.password },
+    }, resData => {
+      if (resData.status != 'OK') errorCallback(Error(resData.message))
+      else successCallback(resData)
+    }, err => errorCallback(err))
+  }
+
   static getProducts(page, keyword) {
     return axios.get(API_PRODUCTS, {
       params: {
