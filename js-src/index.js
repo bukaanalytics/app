@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { AsyncStorage, StyleSheet, Text, View } from 'react-native'
 import { applyMiddleware, compose, createStore } from 'redux';
 import { connect, Provider } from 'react-redux';
 import { composeWithDevTools } from 'remote-redux-devtools';
 import { createLogger } from 'redux-logger';
+import { persistStore, autoRehydrate } from 'redux-persist'
 import thunk from 'redux-thunk';
 
 // All redux reducers (rolled into one mega-reducer)
@@ -33,7 +34,10 @@ class Root extends Component {
     const composeEnhancers = composeWithDevTools({ realtime: true, port: 8000 });
     this.store = composeEnhancers(
       applyMiddleware(...middleware),
+      autoRehydrate()
     )(createStore)(rootReducer)
+
+    persistStore(this.store, { storage: AsyncStorage })
   }
 
   render() {
