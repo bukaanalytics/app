@@ -1,12 +1,14 @@
 import { combineReducers } from 'redux';
 
-import nav from '@redux/nav/reducer'
-import user from '@redux/user/reducer'
+import nav from '@redux/nav/reducer';
+import user from '@redux/user/reducer';
+import pricing from '@redux/pricing/reducer';
 
 // Combine all
 const appReducer = combineReducers({
   nav,
-  user
+  user,
+  pricing,
 });
 
 // Setup root reducer
