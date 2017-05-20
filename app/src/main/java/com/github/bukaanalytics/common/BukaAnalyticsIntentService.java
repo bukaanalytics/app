@@ -21,41 +21,8 @@ public class BukaAnalyticsIntentService extends IntentService {
         super("BukaAnalytics");
     }
 
-    private void findTopStories() {
-        Ion.with(getApplicationContext())
-                .load("https://hacker-news.firebaseio.com/v0/topstories.json")
-                .asJsonArray()
-                .setCallback(new FutureCallback<JsonArray>() {
-                    @Override
-                    public void onCompleted(Exception e, JsonArray result) {
-                        String topStoryId = result.get(0).getAsString();
-                        getStory(topStoryId);
-                    }
-                });
-    }
-
-    private void getStory(String storyId){
-        Ion.with(getApplicationContext())
-                .load("https://hacker-news.firebaseio.com/v0/item/"+storyId+".json")
-                .asJsonObject()
-                .setCallback(new FutureCallback<JsonObject>() {
-                    @Override
-                    public void onCompleted(Exception e, JsonObject result) {
-                        String title = result.get("title").getAsString();
-
-                        Post hnpost = new Post();
-                        hnpost.text = title;
-
-                        BukaAnalyticsSqliteOpenHelper db = BukaAnalyticsSqliteOpenHelper.getInstance(getApplicationContext());
-                        db.addPost(hnpost);
-
-                    }
-                });
-    }
-
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        findTopStories();
         WakefulBroadcastReceiver.completeWakefulIntent(intent);
     }
 }
