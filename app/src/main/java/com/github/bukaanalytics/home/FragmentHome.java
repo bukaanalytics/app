@@ -12,10 +12,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.bukaanalytics.R;
+import com.github.bukaanalytics.common.HTTPRequestHelper;
 import com.github.bukaanalytics.common.model.BukaAnalyticsSqliteOpenHelper;
 import com.github.bukaanalytics.common.model.Product;
 import com.github.bukaanalytics.common.model.Stat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -102,16 +104,55 @@ public class FragmentHome extends Fragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        int activeUserId = 9925909;
+        final int activeUserId = 9925909; //TODO get active userId from login
 
+        final HTTPRequestHelper HTTPHelper = new HTTPRequestHelper();
         final BukaAnalyticsSqliteOpenHelper db = BukaAnalyticsSqliteOpenHelper.getInstance(getContext());
-        db.fetchUser(activeUserId, getContext());
-        db.fetchProductsAndStats(activeUserId, getContext());
-        List<Product> products = db.getProducts(activeUserId);
 
+        //Get product list from cloud database
+        HTTPHelper.fetchProducts(activeUserId, getContext(), new HTTPRequestHelper.ProductsCallback() {
+            @Override
+            public void onCompleted(Exception e, List<Product> productsResult) {
+                if((productsResult != null) && (productsResult.size() > 0)) {
+                    //Insert products into local database
+                    db.addProducts(productsResult);
+                }
+
+                ArrayList<String> productIds= new ArrayList<>();
+                //get all productIds
+                for (int i = 0; i < productsResult.size(); i++) {
+                    productIds.add(productsResult.get(i).id);
+                }
+                String[] productIdsArray = productIds.toArray(new String[0]);
+
+                //Get stat list from cloud database, for all product ids
+                HTTPHelper.fetchStats(productIdsArray, getContext(), new HTTPRequestHelper.StatsCallback() {
+                    @Override
+                    public void onCompleted(Exception e, List<Stat> statsResult) {
+                        if((statsResult != null) && (statsResult.size() > 0)) {
+                            //Insert stats into local database
+                            db.addStats(statsResult);
+                        }
+
+                        //Whatever the result, always display current local data
+                        displayData(activeUserId);
+                    }
+                });
+            }
+        });
+
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    void displayData(int userId) {
+        final BukaAnalyticsSqliteOpenHelper db = BukaAnalyticsSqliteOpenHelper.getInstance(getContext());
+
+        List<Product> products = db.getProducts(userId);
+
+        //Construct the string
         StringBuffer sb = new StringBuffer();
 
-        if(products.size() > 0) {
+        if(products.size() > 3) {
             List<Stat> stats0 = db.getStats(products.get(0).id);
             List<Stat> stats1 = db.getStats(products.get(1).id);
             List<Stat> stats2 = db.getStats(products.get(2).id);
@@ -144,12 +185,7 @@ public class FragmentHome extends Fragment {
         TextView tv = (TextView) getView().findViewById(R.id.text_home);
         tv.setText(sb.toString());
         tv.setMovementMethod(new ScrollingMovementMethod());
-
-
-
-        super.onActivityCreated(savedInstanceState);
     }
-
 
         /**
          * This interface must be implemented by activities that contain this

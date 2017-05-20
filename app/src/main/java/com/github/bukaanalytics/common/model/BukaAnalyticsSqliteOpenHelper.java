@@ -125,62 +125,67 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
         return sInstance;
     }
 
-    public void addStat(Stat stat){
+    public void addStats(List<Stat> stats){
         SQLiteDatabase db = getWritableDatabase();
 
         // It's a good idea to wrap our insert in a transaction. This helps with performance and ensures
         // consistency of the database.
         db.beginTransaction();
         try {
-            ContentValues values = new ContentValues();
-            values.put(KEY_STAT_DATE, stat.date);
-            values.put(KEY_STAT_DATEEPOCH, stat.dateEpoch);
-            values.put(KEY_STAT_DAYNAME, stat.dayName);
-            values.put(KEY_STAT_PRODUCTID, stat.productId);
-            values.put(KEY_STAT_VIEWCOUNT, stat.viewCount);
-            values.put(KEY_STAT_VIEWTOTAL, stat.totalViewCount);
-            values.put(KEY_STAT_SOLDCOUNT, stat.soldCount);
-            values.put(KEY_STAT_SOLDTOTAL, stat.totalSoldCount);
-            values.put(KEY_STAT_INTERESTCOUNT, stat.interestCount);
-            values.put(KEY_STAT_INTERESTTOTAL, stat.totalInterestCount);
+            for (int i = 0; i < stats.size(); i++) {
+                Stat stat = stats.get(i);
+                ContentValues values = new ContentValues();
+                values.put(KEY_STAT_DATE, stat.date);
+                values.put(KEY_STAT_DATEEPOCH, stat.dateEpoch);
+                values.put(KEY_STAT_DAYNAME, stat.dayName);
+                values.put(KEY_STAT_PRODUCTID, stat.productId);
+                values.put(KEY_STAT_VIEWCOUNT, stat.viewCount);
+                values.put(KEY_STAT_VIEWTOTAL, stat.totalViewCount);
+                values.put(KEY_STAT_SOLDCOUNT, stat.soldCount);
+                values.put(KEY_STAT_SOLDTOTAL, stat.totalSoldCount);
+                values.put(KEY_STAT_INTERESTCOUNT, stat.interestCount);
+                values.put(KEY_STAT_INTERESTTOTAL, stat.totalInterestCount);
 
-
-            // Notice how we haven't specified the primary key. SQLite auto increments the primary key column.
-            db.insertOrThrow(TABLE_STATS, null, values);
+                // Notice how we haven't specified the primary key. SQLite auto increments the primary key column.
+                db.insertOrThrow(TABLE_STATS, null, values);
+            }
             db.setTransactionSuccessful();
         }
         catch (SQLException e) {
-            Log.d(TAG, "SQLException: " + e.getMessage());
+            Log.d(TAG, "addStats(), SQLException: " + e.getMessage());
         }
         catch (Exception e) {
-            Log.d(TAG, "Error while trying to add post to database: " + e.getMessage());
+            Log.d(TAG, "addStats() Error: " + e.getMessage());
         } finally {
             db.endTransaction();
         }
     }
 
-    public void addProduct(Product product){
+    public void addProducts(List<Product> products){
         SQLiteDatabase db = getWritableDatabase();
 
         // It's a good idea to wrap our insert in a transaction. This helps with performance and ensures
         // consistency of the database.
         db.beginTransaction();
         try {
-            ContentValues values = new ContentValues();
-            values.put(KEY_PRODUCT_ID, product.id);
-            values.put(KEY_PRODUCT_NAME, product.name);
-            values.put(KEY_PRODUCT_PRICE, product.price);
-            values.put(KEY_PRODUCT_SELLERID, product.sellerId);
+            for (int i = 0; i < products.size(); i++) {
+                Product product = products.get(i);
+                ContentValues values = new ContentValues();
+                values.put(KEY_PRODUCT_ID, product.id);
+                values.put(KEY_PRODUCT_NAME, product.name);
+                values.put(KEY_PRODUCT_PRICE, product.price);
+                values.put(KEY_PRODUCT_SELLERID, product.sellerId);
 
-            // Notice how we haven't specified the primary key. SQLite auto increments the primary key column.
-            db.insertOrThrow(TABLE_PRODUCTS, null, values);
+                // Notice how we haven't specified the primary key. SQLite auto increments the primary key column.
+                db.insertOrThrow(TABLE_PRODUCTS, null, values);
+            }
             db.setTransactionSuccessful();
         }
         catch (SQLException e) {
-            Log.d(TAG, "SQLException: " + e.getMessage());
+            Log.d(TAG, "addProducts(), SQLException: " + e.getMessage());
         }
         catch (Exception e) {
-            Log.d(TAG, "Error while trying to add post to database: " + e.getMessage());
+            Log.d(TAG, "addProducts() Error: " + e.getMessage());
         } finally {
             db.endTransaction();
         }
@@ -202,10 +207,10 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
             db.setTransactionSuccessful();
         }
         catch (SQLException e) {
-            Log.d(TAG, "SQLException: " + e.getMessage());
+            Log.d(TAG, "addUser(), SQLException: " + e.getMessage());
         }
         catch (Exception e) {
-            Log.d(TAG, "Error while trying to add post to database: " + e.getMessage());
+            Log.d(TAG, "addUser Error: " + e.getMessage());
         } finally {
             db.endTransaction();
         }
@@ -237,7 +242,7 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
                 }
             }
         } catch (Exception e) {
-            Log.d(TAG, "Error while trying to get products from database");
+            Log.d(TAG, "getProducts() Error: " + e.getMessage());
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
@@ -273,7 +278,7 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
                 }
             }
         } catch (Exception e) {
-            Log.d(TAG, "getStats(): " + e.getMessage());
+            Log.d(TAG, "getStats() Error: " + e.getMessage());
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
@@ -320,63 +325,4 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
                     }
                 });
     }
-
-    public void fetchProductsAndStats(int userId, final Context context) {
-//        String query = "{'seller_id':" + userId + "}";
-        HTTPRequestHelper httpRequestHelper = new HTTPRequestHelper();
-        httpRequestHelper.getAsJSONArray("https://api.mlab.com/api/1/databases/bukaanalytics/collections/products?q={'seller_id':" + userId + "}&apiKey=" + MLAB_API_KEY,
-            context.getApplicationContext(), new HTTPRequestHelper.JSONArrayCallback() {
-                @Override
-                public void onCompleted(Exception e, JsonArray result) {
-                Log.d(TAG, "fetchProductsAndStats onCompleted: " + result);
-                BukaAnalyticsSqliteOpenHelper db = BukaAnalyticsSqliteOpenHelper.getInstance(context);
-                ArrayList<Product> productList = new ArrayList<Product>();
-                for (int i = 0; i < result.size(); i++) {
-                    JsonObject product = result.get(i).getAsJsonObject();
-                    String id = product.get("product_id").getAsString();
-                    String name = product.get("name").getAsString();
-                    int price = product.get("price").getAsInt();
-                    int sellerId = product.get("seller_id").getAsInt();
-                    Product newProduct = new Product(id, name, price, sellerId);
-
-                    productList.add(newProduct);
-                    db.addProduct(newProduct);
-                }
-                fetchStats(productList, context);
-                }
-            });
-    }
-
-    public void fetchStats(ArrayList<Product> products, final Context context) {
-        for (int i = 0; i < products.size(); i++) {
-            HTTPRequestHelper httpRequestHelper = new HTTPRequestHelper();
-            Log.d(TAG, "https://api.mlab.com/api/1/databases/bukaanalytics/collections/stats?q={'product_id':" + products.get(i).id + "}&apiKey=" + MLAB_API_KEY);
-            httpRequestHelper.getAsJSONArray("https://api.mlab.com/api/1/databases/bukaanalytics/collections/stats?q={'product_id':'" + products.get(i).id + "'}&apiKey=" + MLAB_API_KEY,
-                context.getApplicationContext(), new HTTPRequestHelper.JSONArrayCallback() {
-                    @Override
-                    public void onCompleted(Exception e, JsonArray result) {
-                        Log.d(TAG, "fetchStats onCompleted: " + result);
-                        BukaAnalyticsSqliteOpenHelper db = BukaAnalyticsSqliteOpenHelper.getInstance(context);
-                        for (int i = 0; i < result.size(); i++) {
-                            JsonObject stat = result.get(i).getAsJsonObject();
-                            String date = stat.get("date").getAsString();
-                            int dateEpoch = stat.get("date_epoch").getAsInt();
-                            String dayName = stat.get("day_name").getAsString();
-                            String productId = stat.get("product_id").getAsString();
-                            int viewCount = stat.get("view_count").getAsInt();
-                            int viewTotal = stat.get("view_total").getAsInt();
-                            int soldCount = stat.get("sold_count").getAsInt();
-                            int soldTotal = stat.get("sold_total").getAsInt();
-                            int interestCount = stat.get("interest_count").getAsInt();
-                            int interestTotal = stat.get("interest_total").getAsInt();
-                            Stat newStat = new Stat(date, dateEpoch,dayName, productId, viewCount, viewTotal, soldCount, soldTotal, interestCount, interestTotal);
-
-                            db.addStat(newStat);
-                        }
-
-                    }
-                });
-        }
-    }
-
 }
