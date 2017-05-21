@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { AppColors, AppSizes, AppStyles } from '@theme/'
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import { Pie } from 'react-native-pathjs-charts'
+import Table from 'react-native-simple-table';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
 const viewStatWidth = (screenWidth-40)/7 // -40 karena paddingHorizontal
@@ -21,7 +23,7 @@ class Home extends Component {
 
   render() {
     let maxViewStat = Math.max(...viewStat)
-    let viewStatDiameters = viewStat.map((item) => item*80/maxViewStat)
+    let viewStatDiameters = viewStat.map((item) => item*viewStatWidth/maxViewStat)
 
     return (
       <ScrollView style={AppStyles.flex1}>
@@ -35,10 +37,10 @@ class Home extends Component {
             </View>
           </View>
           <View style={AppStyles.row}>
-            <TouchableOpacity style={AppStyles.padding}>
+            <TouchableOpacity style={[AppStyles.paddingVertical, {paddingRight: 4}]}>
               <Icon name="keyboard-arrow-left" size={36} />
             </TouchableOpacity>
-            <TouchableOpacity style={AppStyles.padding}>
+            <TouchableOpacity style={[AppStyles.paddingVertical, {paddingLeft: 4}]}>
               <Icon name="keyboard-arrow-right" size={36} />
             </TouchableOpacity>
           </View>
@@ -74,6 +76,45 @@ class Home extends Component {
             { viewStatDiameters.map(this.renderViewStat) }
           </View>
         </View>
+
+        <Text style={styles.sectionTitle}>Revenue Attribution</Text>
+        <View style={styles.revenueContainer}>
+          <Pie data={data}
+          options={options}
+          accessorKey="population"
+          margin={{top: 20, left: 20, right: 20, bottom: 20}}
+          color="#2980B9"
+          pallete={
+            [
+              {'r':25,'g':99,'b':201},
+              {'r':24,'g':175,'b':35},
+              {'r':190,'g':31,'b':69},
+              {'r':100,'g':36,'b':199},
+              {'r':214,'g':207,'b':32},
+              {'r':198,'g':84,'b':45}
+            ]
+          }
+          r={0}
+          R={150}
+          legendPosition="topLeft"
+          label={{
+            fontFamily: 'Arial',
+            fontSize: 8,
+            fontWeight: true,
+            color: '#ECF0F1'
+          }}
+          />
+        </View>
+
+        <Text style={styles.sectionTitle}>Most Viewed Product</Text>
+        <View style={styles.overviewContainer}>
+          <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource} />
+        </View>
+
+        <Text style={styles.sectionTitle}>Least Viewed Product</Text>
+        <View style={styles.overviewContainer}>
+          <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource} />
+        </View>
       </ScrollView>
     )
   }
@@ -81,6 +122,79 @@ class Home extends Component {
 
 // To be replaced by dynamic data
 const viewStat = [12, 15, 20, 8, 22, 30, 45]
+const data = [{
+      "name": "Washington",
+      "population": 7694980
+    }, {
+      "name": "Oregon",
+      "population": 2584160
+    }, {
+      "name": "Minnesota",
+      "population": 6590667,
+      "color": {'r':223,'g':154,'b':20}
+    }, {
+      "name": "Alaska",
+      "population": 7284698
+    }]
+const options = {
+      margin: {
+        top: 20,
+        left: 20,
+        right: 20,
+        bottom: 20
+      },
+      width: 350,
+      height: 350,
+      color: '#2980B9',
+      r: 50,
+      R: 150,
+      legendPosition: 'topLeft',
+      animate: {
+        type: 'oneByOne',
+        duration: 200,
+        fillTransition: 3
+      },
+      label: {
+        fontFamily: 'Arial',
+        fontSize: 8,
+        fontWeight: true,
+        color: '#ECF0F1'
+      }
+    }
+const columns = [
+  {
+    title: 'Item',
+    dataIndex: 'item',
+    width: AppSizes.widthThird-40,
+  },
+  {
+    title: 'View',
+    dataIndex: 'view',
+    width: AppSizes.widthThird-40,
+  },
+  {
+    title: 'Avg. Market View',
+    dataIndex: 'avg',
+    width: AppSizes.widthThird-40,
+  }
+];
+const dataSource = [{
+  item: 'Item A',
+  view: 500,
+  avg: 450
+}, {
+  item: 'Item B',
+  view: 400,
+  avg: 394
+}, {
+  item: 'Item C',
+  view: 300,
+  avg: 145
+}, {
+  item: 'Item D',
+  view: 120,
+  avg: 254
+}]
 
 const styles = {
   centeredH3: {
@@ -89,12 +203,13 @@ const styles = {
   },
   centeredStat: {
     ...AppStyles.textCenterAligned,
-    fontSize: 56
+    fontSize: 48
   },
   dateHeaderContainer: {
     ...AppStyles.spreadHorizontalContainer,
-    ...AppStyles.padding, 
-    backgroundColor: AppColors.brand.lightPrimary
+    ...AppStyles.paddingHorizontal, 
+    backgroundColor: AppColors.brand.lightPrimary,
+    elevation: 4
   },
   overviewContainer: {
     ...AppStyles.row,
@@ -102,25 +217,33 @@ const styles = {
     ...AppStyles.paddingVertical,
     backgroundColor: AppColors.background
   },
+  revenueContainer: {
+    ...AppStyles.row,
+    ...AppStyles.paddingVertical,
+    backgroundColor: AppColors.background
+  },
   sectionTitle: {
-    ...AppStyles.h1,
+    ...AppStyles.h2,
     ...AppStyles.padding
   },
   statContainer: {
-    ...AppStyles.flex1,
-    ...AppStyles.paddingHorizontal
+    ...AppStyles.flex1
   },
   statusTagOk: {
     ...AppStyles.textCenterAligned,
     backgroundColor: AppColors.brand.success,
     padding: 4,
-    borderRadius: 16
+    borderRadius: 16,
+    marginHorizontal: 4,
+    fontSize: 10
   },
   statusTagWarning: {
     ...AppStyles.textCenterAligned,
     backgroundColor: AppColors.brand.accent,
     padding: 4,
-    borderRadius: 16
+    borderRadius: 16,
+    marginHorizontal: 4,
+    fontSize: 10
   },
   viewStatSectionContainer: {
     ...AppStyles.paddingHorizontal,
@@ -134,7 +257,8 @@ const styles = {
   },
   viewStatDay: {
     ...AppStyles.textCenterAligned,
-    width: viewStatWidth // -40 karena paddingHorizontal
+    width: viewStatWidth,
+    fontSize: 10
   }
 }
 

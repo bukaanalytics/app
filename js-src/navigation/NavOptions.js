@@ -11,7 +11,7 @@ const navOptions = ({navigation}) => ({
     <TouchableOpacity
       onPress={() => navigation.navigate('DrawerOpen')}
       style={{justifyContent: 'center', alignItems: 'center', padding: 8, paddingTop: 12}}>
-      <Icon name='menu' color='white' size={30} />
+      <Icon name='menu' color='white' size={24} />
     </TouchableOpacity>
   )
 })
