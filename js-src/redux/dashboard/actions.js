@@ -1,9 +1,10 @@
+import moment from 'moment'
 import BLApi from '@lib/BLApi'
 
 export const DASHBOARD = {
   TO_NEXT_WEEK: 'DASHBOARD_TO_NEXT_WEEK',
   TO_PREV_WEEK: 'DASHBOARD_TO_PREV_WEEK',
-  SET_RAW_TRANSACTION_DATA: 'DASHBOARD_SET_RAW_TRANSACTION_DATA',
+  SET_TRANSACTION_DATA: 'DASHBOARD_SET_TRANSACTION_DATA',
   RESET_TRANSACTION_DATA: 'DASHBOARD_RESET_TRANSACTION_DATA',
   FETCHING_TRANSACTION_DATA: 'DASHBOARD_FETCHING_TRANSACTION_DATA',
   FETCH_TRANSACTION_COMPLETED: 'DASHBOARD_FETCH_TRANSACTION_COMPLETED'
@@ -12,20 +13,23 @@ export const DASHBOARD = {
 export function refreshData(refreshType) {
   let perPage = 1
 
-  return function(dispatch) {
+  return function(dispatch, getState) {
+    dispatch(fetchingTransactionData())
+    dispatch(resetTransactionData())
+
     if (refreshType == 'next') dispatch(setDateToNextWeek())
     else if (refreshType == 'prev') dispatch(setDateToPrevWeek())
-    
-    dispatch(resetTransactionData())
+
+    let latestDate = getState().dashboard.latestDate
+    let since = moment(latestDate, 'X').subtract(13, 'day').format('YYYY-MM-DD')
 
     return BLApi.getTransactions({
       perPage: perPage,
       page: 1,
-      since: '2016-05-08'
+      since: since
     }, transactions => {
+      dispatch(setTransactionData(transactions))
       if (transactions.length < perPage) dispatch(fetchTransactionCompleted())
-      else dispatch(fetchingTransactionData())
-      dispatch(setRawTransactionData(transactions))
     }, err => {
       console.log(err)
     })
@@ -51,9 +55,9 @@ function resetTransactionData() {
   }
 }
 
-function setRawTransactionData(transactions) {
+function setTransactionData(transactions) {
   return {
-    type: DASHBOARD.SET_RAW_TRANSACTION_DATA,
+    type: DASHBOARD.SET_TRANSACTION_DATA,
     payload: { transactions }
   }
 }

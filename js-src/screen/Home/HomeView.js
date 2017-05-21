@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import { Pie } from 'react-native-pathjs-charts'
 import Table from 'react-native-simple-table';
 import moment from 'moment'
+import numeral from 'numeral'
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
 const viewStatWidth = (screenWidth-40)/7 // -40 karena paddingHorizontal
@@ -43,11 +44,11 @@ class Home extends Component {
   }
 
   getRevenue= () => {
-    let { rawTransactions, fetchingTransaction } = this.props.dashboard
+    let { currentRevenue, fetchingTransaction } = this.props.dashboard
 
     if (fetchingTransaction) return <ActivityIndicator style={{flex: 1}} />
 
-    return <Text style={styles.centeredStat}>{ rawTransactions.length }</Text>
+    return <Text style={styles.centeredStat}>{ numeral(currentRevenue).format('0a') }</Text>
   }
 
   renderViewStat = (item, index) => {
@@ -63,7 +64,7 @@ class Home extends Component {
     let viewStatDiameters = viewStat.map((item) => item*viewStatWidth/maxViewStat)
 
     return (
-      <ScrollView style={AppStyles.flex1}>
+      <View style={AppStyles.flex1}>
         {/* Date Header */}
         <View style={styles.dateHeaderContainer}>
           <View style={AppStyles.row}>
@@ -87,76 +88,77 @@ class Home extends Component {
           </View>
         </View>
         {/* End of Date Header */}
-
-        <Text style={styles.sectionTitle}>Overview</Text>
-        <View style={styles.overviewContainer}>
-          <View style={styles.statContainer}>
-            <Text style={styles.centeredH3}>Revenue</Text>
-            { this.getRevenue() }
-            <Text style={styles.statusTagOk}>Compared to Prev Period</Text>
+        <ScrollView>
+          <Text style={styles.sectionTitle}>Overview</Text>
+          <View style={styles.overviewContainer}>
+            <View style={styles.statContainer}>
+              <Text style={styles.centeredH3}>Revenue</Text>
+              { this.getRevenue() }
+              <Text style={styles.statusTagOk}>Compared to Prev Period</Text>
+            </View>
+            <View style={styles.statContainer}>
+              <Text style={styles.centeredH3}>Conv. Rate</Text>
+              <Text style={styles.centeredStat}>3 %</Text>
+              <Text style={styles.statusTagWarning}>Compared to Prev Period</Text>
+            </View>
           </View>
-          <View style={styles.statContainer}>
-            <Text style={styles.centeredH3}>Conv. Rate</Text>
-            <Text style={styles.centeredStat}>3 %</Text>
-            <Text style={styles.statusTagWarning}>Compared to Prev Period</Text>
+
+          <Text style={styles.sectionTitle}>User Views by Day</Text>
+          <View style={styles.viewStatSectionContainer}>
+            <View style={styles.viewStatContainer}>
+              <Text style={styles.viewStatDay}>Senin</Text>
+              <Text style={styles.viewStatDay}>Selasa</Text>
+              <Text style={styles.viewStatDay}>Rabu</Text>
+              <Text style={styles.viewStatDay}>Kamis</Text>
+              <Text style={styles.viewStatDay}>Jumat</Text>
+              <Text style={styles.viewStatDay}>Sabtu</Text>
+              <Text style={styles.viewStatDay}>Minggu</Text>
+            </View>
+            <View style={styles.viewStatContainer}>
+              { viewStatDiameters.map(this.renderViewStat) }
+            </View>
           </View>
-        </View>
 
-        <Text style={styles.sectionTitle}>User Views by Day</Text>
-        <View style={styles.viewStatSectionContainer}>
-          <View style={styles.viewStatContainer}>
-            <Text style={styles.viewStatDay}>Senin</Text>
-            <Text style={styles.viewStatDay}>Selasa</Text>
-            <Text style={styles.viewStatDay}>Rabu</Text>
-            <Text style={styles.viewStatDay}>Kamis</Text>
-            <Text style={styles.viewStatDay}>Jumat</Text>
-            <Text style={styles.viewStatDay}>Sabtu</Text>
-            <Text style={styles.viewStatDay}>Minggu</Text>
+          <Text style={styles.sectionTitle}>Revenue Attribution</Text>
+          <View style={styles.revenueContainer}>
+            <Pie data={data}
+            options={options}
+            accessorKey="population"
+            margin={{top: 20, left: 20, right: 20, bottom: 20}}
+            color="#2980B9"
+            pallete={
+              [
+                {'r':25,'g':99,'b':201},
+                {'r':24,'g':175,'b':35},
+                {'r':190,'g':31,'b':69},
+                {'r':100,'g':36,'b':199},
+                {'r':214,'g':207,'b':32},
+                {'r':198,'g':84,'b':45}
+              ]
+            }
+            r={0}
+            R={150}
+            legendPosition="topLeft"
+            label={{
+              fontFamily: 'Arial',
+              fontSize: 8,
+              fontWeight: true,
+              color: '#ECF0F1'
+            }}
+            />
           </View>
-          <View style={styles.viewStatContainer}>
-            { viewStatDiameters.map(this.renderViewStat) }
+
+          <Text style={styles.sectionTitle}>Most Viewed Product</Text>
+          <View style={styles.overviewContainer}>
+            <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource} />
           </View>
-        </View>
 
-        <Text style={styles.sectionTitle}>Revenue Attribution</Text>
-        <View style={styles.revenueContainer}>
-          <Pie data={data}
-          options={options}
-          accessorKey="population"
-          margin={{top: 20, left: 20, right: 20, bottom: 20}}
-          color="#2980B9"
-          pallete={
-            [
-              {'r':25,'g':99,'b':201},
-              {'r':24,'g':175,'b':35},
-              {'r':190,'g':31,'b':69},
-              {'r':100,'g':36,'b':199},
-              {'r':214,'g':207,'b':32},
-              {'r':198,'g':84,'b':45}
-            ]
-          }
-          r={0}
-          R={150}
-          legendPosition="topLeft"
-          label={{
-            fontFamily: 'Arial',
-            fontSize: 8,
-            fontWeight: true,
-            color: '#ECF0F1'
-          }}
-          />
-        </View>
-
-        <Text style={styles.sectionTitle}>Most Viewed Product</Text>
-        <View style={styles.overviewContainer}>
-          <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource} />
-        </View>
-
-        <Text style={styles.sectionTitle}>Least Viewed Product</Text>
-        <View style={styles.overviewContainer}>
-          <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource} />
-        </View>
-      </ScrollView>
+          <Text style={styles.sectionTitle}>Least Viewed Product</Text>
+          <View style={styles.overviewContainer}>
+            <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource} />
+          </View>
+        </ScrollView>
+      </View>
     )
   }
 }
