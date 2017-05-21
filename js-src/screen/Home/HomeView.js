@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
-import { Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { AppColors, AppSizes, AppStyles } from '@theme/'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { Pie } from 'react-native-pathjs-charts'
 import Table from 'react-native-simple-table';
 import moment from 'moment'
+import numeral from 'numeral'
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
 const viewStatWidth = (screenWidth-40)/7 // -40 karena paddingHorizontal
@@ -14,13 +15,8 @@ class Home extends Component {
     super(props)
   }
 
-  getWeeklyViewData() {
-    let { latestDate } = this.props.dashboard
-    let momentObj = moment(latestDate, 'X')
-
-    let sundayDateStr = momentObj.format('YYYY-MM-DD')
-    let mondayDateStr = momentObj.day(-6).format('YYYY-MM-DD')
-    this.props.getDashboardData(mondayDateStr,sundayDateStr);
+  componentDidMount() {
+    this.props.refreshData()
   }
 
   getDateRange = () => {
@@ -45,6 +41,14 @@ class Home extends Component {
     let range = mondayDateStr + ' - ' + sundayDateStr
 
     return range
+  }
+
+  getRevenue= () => {
+    let { currentRevenue, fetchingTransaction } = this.props.dashboard
+
+    if (fetchingTransaction) return <ActivityIndicator style={{flex: 1}} />
+
+    return <Text style={styles.centeredStat}>{ numeral(currentRevenue).format('0a') }</Text>
   }
 
   renderViewStat = (item, index) => {
@@ -75,7 +79,7 @@ class Home extends Component {
     let viewStatDiameters = viewStat.map((item) => item*viewStatWidth/maxViewStat)
 
     return (
-      <ScrollView style={AppStyles.flex1}>
+      <View style={AppStyles.flex1}>
         {/* Date Header */}
         <View style={styles.dateHeaderContainer}>
           <View style={AppStyles.row}>
@@ -87,88 +91,89 @@ class Home extends Component {
           </View>
           <View style={AppStyles.row}>
             <TouchableOpacity style={[AppStyles.paddingVertical, {paddingRight: 4}]}
-              onPress={() => this.props.getPrevWeekData()}
+              onPress={() => this.props.refreshData('prev')}
             >
               <Icon name="keyboard-arrow-left" size={36} />
             </TouchableOpacity>
             <TouchableOpacity style={[AppStyles.paddingVertical, {paddingLeft: 4}]}
-              onPress={() => this.props.getNextWeekData()}
+              onPress={() => this.props.refreshData('next')}
             >
               <Icon name="keyboard-arrow-right" size={36} />
             </TouchableOpacity>
           </View>
         </View>
         {/* End of Date Header */}
-
-        <Text style={styles.sectionTitle}>Overview</Text>
-        <View style={styles.overviewContainer}>
-          <View style={styles.statContainer}>
-            <Text style={styles.centeredH3}>Revenue</Text>
-            <Text style={styles.centeredStat}>400 K</Text>
-            <Text style={styles.statusTagOk}>Compared to Prev Period</Text>
+        <ScrollView>
+          <Text style={styles.sectionTitle}>Overview</Text>
+          <View style={styles.overviewContainer}>
+            <View style={styles.statContainer}>
+              <Text style={styles.centeredH3}>Revenue</Text>
+              { this.getRevenue() }
+              <Text style={styles.statusTagOk}>Compared to Prev Period</Text>
+            </View>
+            <View style={styles.statContainer}>
+              <Text style={styles.centeredH3}>Conv. Rate</Text>
+              <Text style={styles.centeredStat}>3 %</Text>
+              <Text style={styles.statusTagWarning}>Compared to Prev Period</Text>
+            </View>
           </View>
-          <View style={styles.statContainer}>
-            <Text style={styles.centeredH3}>Conv. Rate</Text>
-            <Text style={styles.centeredStat}>3 %</Text>
-            <Text style={styles.statusTagWarning}>Compared to Prev Period</Text>
+
+          <Text style={styles.sectionTitle}>User Views by Day</Text>
+          <View style={styles.viewStatSectionContainer}>
+            <View style={styles.viewStatContainer}>
+              <Text style={styles.viewStatDay}>Senin</Text>
+              <Text style={styles.viewStatDay}>Selasa</Text>
+              <Text style={styles.viewStatDay}>Rabu</Text>
+              <Text style={styles.viewStatDay}>Kamis</Text>
+              <Text style={styles.viewStatDay}>Jumat</Text>
+              <Text style={styles.viewStatDay}>Sabtu</Text>
+              <Text style={styles.viewStatDay}>Minggu</Text>
+            </View>
+            <View style={styles.viewStatContainer}>
+              { viewStatDiameters.map(this.renderViewStat) }
+            </View>
           </View>
-        </View>
 
-        <Text style={styles.sectionTitle}>User Views by Day</Text>
-        <View style={styles.viewStatSectionContainer}>
-          <View style={styles.viewStatContainer}>
-            <Text style={styles.viewStatDay}>Senin</Text>
-            <Text style={styles.viewStatDay}>Selasa</Text>
-            <Text style={styles.viewStatDay}>Rabu</Text>
-            <Text style={styles.viewStatDay}>Kamis</Text>
-            <Text style={styles.viewStatDay}>Jumat</Text>
-            <Text style={styles.viewStatDay}>Sabtu</Text>
-            <Text style={styles.viewStatDay}>Minggu</Text>
+          <Text style={styles.sectionTitle}>Revenue Attribution</Text>
+          <View style={styles.revenueContainer}>
+            <Pie data={data}
+            options={options}
+            accessorKey="population"
+            margin={{top: 20, left: 20, right: 20, bottom: 20}}
+            color="#2980B9"
+            pallete={
+              [
+                {'r':25,'g':99,'b':201},
+                {'r':24,'g':175,'b':35},
+                {'r':190,'g':31,'b':69},
+                {'r':100,'g':36,'b':199},
+                {'r':214,'g':207,'b':32},
+                {'r':198,'g':84,'b':45}
+              ]
+            }
+            r={0}
+            R={150}
+            legendPosition="topLeft"
+            label={{
+              fontFamily: 'Arial',
+              fontSize: 8,
+              fontWeight: true,
+              color: '#ECF0F1'
+            }}
+            />
           </View>
-          <View style={styles.viewStatContainer}>
-            { viewStatDiameters.map(this.renderViewStat) }
+
+          <Text style={styles.sectionTitle}>Most Viewed Product</Text>
+          <View style={styles.overviewContainer}>
+            <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource} />
           </View>
-        </View>
 
-        <Text style={styles.sectionTitle}>Revenue Attribution</Text>
-        <View style={styles.revenueContainer}>
-          <Pie data={data}
-          options={options}
-          accessorKey="population"
-          margin={{top: 20, left: 20, right: 20, bottom: 20}}
-          color="#2980B9"
-          pallete={
-            [
-              {'r':25,'g':99,'b':201},
-              {'r':24,'g':175,'b':35},
-              {'r':190,'g':31,'b':69},
-              {'r':100,'g':36,'b':199},
-              {'r':214,'g':207,'b':32},
-              {'r':198,'g':84,'b':45}
-            ]
-          }
-          r={0}
-          R={150}
-          legendPosition="topLeft"
-          label={{
-            fontFamily: 'Arial',
-            fontSize: 8,
-            fontWeight: true,
-            color: '#ECF0F1'
-          }}
-          />
-        </View>
-
-        <Text style={styles.sectionTitle}>Most Viewed Product</Text>
-        <View style={styles.overviewContainer}>
-          <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource} />
-        </View>
-
-        <Text style={styles.sectionTitle}>Least Viewed Product</Text>
-        <View style={styles.overviewContainer}>
-          <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource} />
-        </View>
-      </ScrollView>
+          <Text style={styles.sectionTitle}>Least Viewed Product</Text>
+          <View style={styles.overviewContainer}>
+            <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource} />
+          </View>
+        </ScrollView>
+      </View>
     )
   }
 }

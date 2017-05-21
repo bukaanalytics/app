@@ -27,8 +27,8 @@ class BLApi {
       }
     })
     .then(data => {
-      console.log(data)
-      onSuccess(data)
+      if (data.status != 'OK') throw Error(data.message)
+      else onSuccess(data)
     })
     .catch(err => {
       onError(err)
@@ -41,9 +41,36 @@ class BLApi {
       method: 'post',
       url: API_BASE_URL + '/authenticate.json',
       auth: { username: data.username, password: data.password },
+    }, resData => successCallback(resData), err => errorCallback(err))
+  }
+
+  static getTransactions(params, successCallback, errorCallback) {
+    let { perPage, page, since } = params
+
+    return this.sendApiRequest({
+      method: 'get',
+      url: 'https://api.bukalapak.com/v2/transactions.json',
+      auth: {
+        username: '6214450',
+        password: 'I1vy09dhNuWx3G0CGiN'
+      },
+      params: {
+        page: page,
+        per_page: perPage,
+        seller: 1,
+        status: 5,
+        created_since: since
+      }
     }, resData => {
-      if (resData.status != 'OK') errorCallback(Error(resData.message))
-      else successCallback(resData)
+      successCallback(resData.transactions)
+
+      if (resData.transactions.length == perPage) {
+        let newParam = {
+          perPage, since,
+          page: page+1
+        }
+        this.getTransactions(newParam, successCallback, errorCallback)
+      }
     }, err => errorCallback(err))
   }
 
