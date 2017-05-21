@@ -37,6 +37,10 @@ const config = {
 
 class BLSqlite {
 
+  constructor() {
+    this.openDatabase();
+  }
+
   openDatabase() {
     this.db = SQLite.openDatabase({
       name: config.dbname,
@@ -44,16 +48,31 @@ class BLSqlite {
   }
 
   getWeeklyView(param, callback) {
+    console.log(param);
     this.db.executeSql(`
-      SELECT SUM(${config.col.stas.view_count})
+      SELECT
+        ${config.col.stats.day_name} as day_name,
+        SUM(${config.col.stats.view_count}) as daily_view
       FROM ${config.tables.stats}
       WHERE ${config.col.stats.date} BETWEEN ? AND ?
       GROUP BY ${config.col.stats.day_name}
-      `, [param.start_date, param.end_date], (t, r) => {
-        callback(t, r);
+      `, [param.start_date, param.end_date], results => {
+        console.log("results inside executeSql");
+        console.log(results);
+        callback(this.parseWeeklyViewResult(results));
       });
+  }
+
+  parseWeeklyViewResult(results) {
+    const retval = {};
+    const result_length = results.rows.length;
+    for (let i = 0; i < result_length; i++) {
+      const row = results.rows.item(i);
+      retval[`${row.day_name}`] = row.daily_view;
+    }
+    return retval;
   }
 
 }
 
-export const db = new BLSqlite();
+export const Sqlite = new BLSqlite();

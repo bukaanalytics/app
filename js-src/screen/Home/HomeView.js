@@ -14,6 +14,15 @@ class Home extends Component {
     super(props)
   }
 
+  getWeeklyViewData() {
+    let { latestDate } = this.props.dashboard
+    let momentObj = moment(latestDate, 'X')
+
+    let sundayDateStr = momentObj.format('YYYY-MM-DD')
+    let mondayDateStr = momentObj.day(-6).format('YYYY-MM-DD')
+    this.props.getDashboardData(mondayDateStr,sundayDateStr);
+  }
+
   getDateRange = () => {
     let { latestDate } = this.props.dashboard
     let momentObj = moment(latestDate, 'X')
@@ -46,7 +55,22 @@ class Home extends Component {
     )
   }
 
+  retrieveWeeklyData() {
+    const { weekly_view } = this.props.dashboard;
+    const view_stat = [];
+    view_stat[0] = weekly_view.Monday || 0;
+    view_stat[1] = weekly_view.Tuesday || 0;
+    view_stat[2] = weekly_view.Wednesday || 0;
+    view_stat[3] = weekly_view.Thursday || 0;
+    view_stat[4] = weekly_view.Friday || 0;
+    view_stat[5] = weekly_view.Saturday || 0;
+    view_stat[6] = weekly_view.Sunday || 0;
+    return view_stat;
+  }
+
   render() {
+    console.log("weekly view is ", this.props.dashboard.weekly_view);
+    viewStat = this.retrieveWeeklyData();
     let maxViewStat = Math.max(...viewStat)
     let viewStatDiameters = viewStat.map((item) => item*viewStatWidth/maxViewStat)
 
@@ -63,12 +87,12 @@ class Home extends Component {
           </View>
           <View style={AppStyles.row}>
             <TouchableOpacity style={[AppStyles.paddingVertical, {paddingRight: 4}]}
-              onPress={() => this.props.toPrevWeek()}
+              onPress={() => this.props.getPrevWeekData()}
             >
               <Icon name="keyboard-arrow-left" size={36} />
             </TouchableOpacity>
             <TouchableOpacity style={[AppStyles.paddingVertical, {paddingLeft: 4}]}
-              onPress={() => this.props.toNextWeek()}
+              onPress={() => this.props.getNextWeekData()}
             >
               <Icon name="keyboard-arrow-right" size={36} />
             </TouchableOpacity>
@@ -236,7 +260,7 @@ const styles = {
   },
   dateHeaderContainer: {
     ...AppStyles.spreadHorizontalContainer,
-    ...AppStyles.paddingHorizontal, 
+    ...AppStyles.paddingHorizontal,
     backgroundColor: AppColors.brand.lightPrimary,
     elevation: 4
   },

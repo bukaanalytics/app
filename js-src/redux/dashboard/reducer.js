@@ -3,7 +3,8 @@ import moment from 'moment'
 
 const initialState = {
   latestDate: moment().day(7).unix(),
-}
+  weekly_view: {},
+};
 
 export default function dashboardReducer(state = initialState, action) {
   let newLatestDate
@@ -21,6 +22,11 @@ export default function dashboardReducer(state = initialState, action) {
         ...state,
         latestDate: newLatestDate
       }
+    case DASHBOARD.SET_DASHBOARD_DATA:
+      return {
+        ...state,
+        weekly_view: action.data,
+      };
     default:
       return initialState
   }
