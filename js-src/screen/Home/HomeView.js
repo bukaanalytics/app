@@ -4,6 +4,7 @@ import { AppColors, AppSizes, AppStyles } from '@theme/'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { Pie } from 'react-native-pathjs-charts'
 import Table from 'react-native-simple-table';
+import moment from 'moment'
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
 const viewStatWidth = (screenWidth-40)/7 // -40 karena paddingHorizontal
@@ -11,6 +12,30 @@ const viewStatWidth = (screenWidth-40)/7 // -40 karena paddingHorizontal
 class Home extends Component {
   constructor(props) {
     super(props)
+  }
+
+  getDateRange = () => {
+    let { latestDate } = this.props.dashboard
+    let momentObj = moment(latestDate, 'X')
+
+    let sundayDateStr = momentObj.format('D MMM')
+    let mondayDateStr = momentObj.day(-6).format('D MMM')
+
+    let range = mondayDateStr + ' - ' + sundayDateStr
+
+    return range
+  }
+
+  getPreviousDateRange = () => {
+    let { latestDate } = this.props.dashboard
+    let momentObj = moment(latestDate, 'X')
+
+    let sundayDateStr = momentObj.day(-7).format('D MMM')
+    let mondayDateStr = momentObj.day(-6).format('D MMM')
+
+    let range = mondayDateStr + ' - ' + sundayDateStr
+
+    return range
   }
 
   renderViewStat = (item, index) => {
@@ -32,15 +57,19 @@ class Home extends Component {
           <View style={AppStyles.row}>
             <Icon name="date-range" size={36} />
             <View style={AppStyles.paddingLeft}>
-              <Text style={AppStyles.h3}>22 April - 29 April</Text>
-              <Text style={AppStyles.subtext}>14 April - 21 April</Text>
+              <Text style={AppStyles.h3}>{ this.getDateRange() }</Text>
+              <Text style={AppStyles.subtext}>{ this.getPreviousDateRange() }</Text>
             </View>
           </View>
           <View style={AppStyles.row}>
-            <TouchableOpacity style={[AppStyles.paddingVertical, {paddingRight: 4}]}>
+            <TouchableOpacity style={[AppStyles.paddingVertical, {paddingRight: 4}]}
+              onPress={() => this.props.toPrevWeek()}
+            >
               <Icon name="keyboard-arrow-left" size={36} />
             </TouchableOpacity>
-            <TouchableOpacity style={[AppStyles.paddingVertical, {paddingLeft: 4}]}>
+            <TouchableOpacity style={[AppStyles.paddingVertical, {paddingLeft: 4}]}
+              onPress={() => this.props.toNextWeek()}
+            >
               <Icon name="keyboard-arrow-right" size={36} />
             </TouchableOpacity>
           </View>
