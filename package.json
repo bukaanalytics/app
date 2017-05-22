@@ -39,7 +39,8 @@
     "redux-persist": "^4.8.0",
     "redux-thunk": "^2.2.0",
     "superagent": "^3.5.2",
-    "tcomb-form-native": "^0.6.8"
+    "tcomb-form-native": "^0.6.8",
+    "truncate": "^2.0.0"
   },
   "jest": {
     "preset": "react-native"

@@ -6,6 +6,7 @@ import { Pie } from 'react-native-pathjs-charts'
 import Table from 'react-native-simple-table';
 import moment from 'moment'
 import numeral from 'numeral'
+import truncate from 'truncate'
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window')
 const viewStatWidth = (screenWidth-40)/7 // -40 karena paddingHorizontal
@@ -48,7 +49,7 @@ class Home extends Component {
 
     if (fetchingTransaction) return <ActivityIndicator style={{flex: 1}} />
 
-    return <Text style={styles.centeredStat}>{ numeral(currentRevenue).format('0a') }</Text>
+    return <Text style={styles.centeredStat}>{ numeral(currentRevenue).format('0.0 a') }</Text>
   }
 
   renderViewStat = (item, index) => {
@@ -73,8 +74,36 @@ class Home extends Component {
   }
 
   render() {
-    console.log("weekly view is ", this.props.dashboard.weekly_view);
+    console.log("state are: ", this.props.dashboard);
+
+
+
+    // Retriveing data from sqlite, truncating, and formating the number if needed
     viewStat = this.retrieveWeeklyData();
+    const { least_viewed, most_viewed, convertion_rate, revenue_attribution } = this.props.dashboard;
+    const dataSource_least_viewed = least_viewed.map( d => {
+      return {
+        item: truncate(d.item, 25),
+        view: numeral(d.view).format('0.0 a'),
+      };
+    });
+    const dataSource_most_viewed = most_viewed.map( d => {
+      return {
+        item: truncate(d.item, 25),
+        view: numeral(d.view).format('0.0 a'),
+      };
+    });
+    console.log(revenue_attribution);
+    const data_revenue = revenue_attribution.map( d => {
+      return {
+        name: truncate(d.name, 25),
+        attribution: d.attribution,
+      };
+    });
+    const conv_rate = numeral(convertion_rate.sold_accumulated / convertion_rate.view_accumulated * 100).format('0.0');
+
+
+
     let maxViewStat = Math.max(...viewStat)
     let viewStatDiameters = viewStat.map((item) => item*viewStatWidth/maxViewStat)
 
@@ -113,7 +142,7 @@ class Home extends Component {
             </View>
             <View style={styles.statContainer}>
               <Text style={styles.centeredH3}>Conv. Rate</Text>
-              <Text style={styles.centeredStat}>3 %</Text>
+              <Text style={styles.centeredStat}> {conv_rate} %</Text>
               <Text style={styles.statusTagWarning}>Compared to Prev Period</Text>
             </View>
           </View>
@@ -136,9 +165,9 @@ class Home extends Component {
 
           <Text style={styles.sectionTitle}>Revenue Attribution</Text>
           <View style={styles.revenueContainer}>
-            <Pie data={data}
+            <Pie data={data_revenue}
             options={options}
-            accessorKey="population"
+            accessorKey="attribution"
             margin={{top: 20, left: 20, right: 20, bottom: 20}}
             color="#2980B9"
             pallete={
@@ -165,12 +194,12 @@ class Home extends Component {
 
           <Text style={styles.sectionTitle}>Most Viewed Product</Text>
           <View style={styles.overviewContainer}>
-            <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource} />
+            <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource_most_viewed} />
           </View>
 
           <Text style={styles.sectionTitle}>Least Viewed Product</Text>
           <View style={styles.overviewContainer}>
-            <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource} />
+            <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource_least_viewed} />
           </View>
         </ScrollView>
       </View>
@@ -182,17 +211,17 @@ class Home extends Component {
 const viewStat = [12, 15, 20, 8, 22, 30, 45]
 const data = [{
       "name": "Washington",
-      "population": 7694980
+      "attribution": 7694980
     }, {
       "name": "Oregon",
-      "population": 2584160
+      "attribution": 2584160
     }, {
       "name": "Minnesota",
-      "population": 6590667,
+      "attribution": 6590667,
       "color": {'r':223,'g':154,'b':20}
     }, {
       "name": "Alaska",
-      "population": 7284698
+      "attribution": 7284698
     }]
 const options = {
       margin: {
@@ -223,18 +252,18 @@ const columns = [
   {
     title: 'Item',
     dataIndex: 'item',
-    width: AppSizes.widthThird-40,
+    width: AppSizes.widthHalf-40,
   },
   {
     title: 'View',
     dataIndex: 'view',
-    width: AppSizes.widthThird-40,
+    width: AppSizes.widthHalf-40,
   },
-  {
-    title: 'Avg. Market View',
-    dataIndex: 'avg',
-    width: AppSizes.widthThird-40,
-  }
+  // {
+  //   title: 'Avg. Market View',
+  //   dataIndex: 'avg',
+  //   width: AppSizes.widthThird-40,
+  // }
 ];
 const dataSource = [{
   item: 'Item A',

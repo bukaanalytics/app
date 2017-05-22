@@ -6,8 +6,17 @@ const initialState = {
   rawTransactions: [],
   fetchingTransaction: false,
   currentRevenue: 0,
-  previousRevenue: 0
+  previousRevenue: 0,
   weekly_view: {},
+  least_viewed: [],
+  most_viewed: [],
+  convertion_rate: 0,
+  revenue_attribution: [
+    {
+      name: '',
+      attribution: 1,
+    },
+  ],
 };
 
 export default function dashboardReducer(state = initialState, action) {
@@ -76,7 +85,7 @@ export default function dashboardReducer(state = initialState, action) {
     case DASHBOARD.SET_DASHBOARD_DATA:
       return {
         ...state,
-        weekly_view: action.data,
+        [action.key]: action.value,
       };
     default:
       return initialState

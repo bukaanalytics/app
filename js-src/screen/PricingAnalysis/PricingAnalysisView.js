@@ -6,6 +6,7 @@ import { Alerts, Button, Card, Spacer, Text } from '@components/ui/';
 import FormWrapper from 'tcomb-form-native';
 import _ from 'lodash';
 import Icon from 'react-native-vector-icons/FontAwesome'
+import numeral from 'numeral';
 
 import { Bar } from 'react-native-pathjs-charts';
 
@@ -121,7 +122,7 @@ class PricingAnalysis extends Component{
       axisX: {
         showAxis: true,
         showLines: true,
-        showLabels: true,
+        showLabels: false,
         showTicks: true,
         zeroAxis: false,
         orient: 'bottom',
@@ -169,7 +170,7 @@ class PricingAnalysis extends Component{
             />
 
 
-            <Icon name="filter" size={32} style={{margin: 10}} />
+            <Icon name="filter" size={32} style={{margin: 10, color:'#fff'}} />
           </View>
         </SubHeader>
 
@@ -196,15 +197,15 @@ class PricingAnalysis extends Component{
               <View style={styles.wrapperText}>
                 <View style={styles.infoText}>
                   <Text h4>Terendah</Text>
-                  <Text h3> {this.props.min_price} </Text>
+                  <Text h3> {numeral(this.props.min_price).format('0,0.0 a')} </Text>
                 </View>
                 <View style={styles.infoText}>
                   <Text h4>Rata-Rata</Text>
-                  <Text h3> {this.props.avg_price} </Text>
+                  <Text h3> {numeral(this.props.avg_price).format('0,0.0 a')} </Text>
                 </View>
                 <View style={styles.infoText}>
                   <Text h4>Termahal</Text>
-                  <Text h3> {this.props.max_price} </Text>
+                  <Text h3> {numeral(this.props.max_price).format('0,0.0 a')} </Text>
                 </View>
               </View>
 
@@ -212,7 +213,7 @@ class PricingAnalysis extends Component{
                 <View style={styles.wrapperText}>
                   <View style={styles.infoText}>
                     <Text h2>Terbaik</Text>
-                    <Text h1> {this.props.best_price} </Text>
+                    <Text h1> {numeral(this.props.best_price).format('0,0.0 a')} </Text>
                   </View>
                 </View>
               </View>
