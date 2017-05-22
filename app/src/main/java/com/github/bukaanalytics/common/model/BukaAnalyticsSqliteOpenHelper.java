@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.database.MatrixCursor;
 
@@ -46,6 +47,7 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
     // Stat Table Columns
     private static final String KEY_STAT_ID = "id";
     private static final String KEY_STAT_DATE = "date";
+    private static final String KEY_STAT_DATEEPOCH = "date_epoch";
     private static final String KEY_STAT_DAYNAME = "day_name";
     private static final String KEY_STAT_PRODUCTID = "product_id";
     private static final String KEY_STAT_VIEWCOUNT = "view_count";
@@ -87,6 +89,7 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
                 "(" +
                 KEY_STAT_ID + " INTEGER PRIMARY KEY," +
                 KEY_STAT_DATE + " TEXT," +
+                KEY_STAT_DATEEPOCH + " INTEGER," +
                 KEY_STAT_DAYNAME + " TEXT," +
                 KEY_STAT_PRODUCTID + " TEXT," +
                 KEY_STAT_VIEWCOUNT + " INTEGER," +
@@ -124,61 +127,67 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
         return sInstance;
     }
 
-    public void addStat(Stat stat){
+    public void addStats(List<Stat> stats){
         SQLiteDatabase db = getWritableDatabase();
 
         // It's a good idea to wrap our insert in a transaction. This helps with performance and ensures
         // consistency of the database.
         db.beginTransaction();
         try {
-            ContentValues values = new ContentValues();
-            values.put(KEY_STAT_DATE, stat.date);
-            values.put(KEY_STAT_DAYNAME, stat.dayName);
-            values.put(KEY_STAT_PRODUCTID, stat.productId);
-            values.put(KEY_STAT_VIEWCOUNT, stat.viewCount);
-            values.put(KEY_STAT_VIEWTOTAL, stat.totalViewCount);
-            values.put(KEY_STAT_SOLDCOUNT, stat.soldCount);
-            values.put(KEY_STAT_SOLDTOTAL, stat.totalSoldCount);
-            values.put(KEY_STAT_INTERESTCOUNT, stat.interestCount);
-            values.put(KEY_STAT_INTERESTTOTAL, stat.totalInterestCount);
+            for (int i = 0; i < stats.size(); i++) {
+                Stat stat = stats.get(i);
+                ContentValues values = new ContentValues();
+                values.put(KEY_STAT_DATE, stat.date);
+                values.put(KEY_STAT_DATEEPOCH, stat.dateEpoch);
+                values.put(KEY_STAT_DAYNAME, stat.dayName);
+                values.put(KEY_STAT_PRODUCTID, stat.productId);
+                values.put(KEY_STAT_VIEWCOUNT, stat.viewCount);
+                values.put(KEY_STAT_VIEWTOTAL, stat.totalViewCount);
+                values.put(KEY_STAT_SOLDCOUNT, stat.soldCount);
+                values.put(KEY_STAT_SOLDTOTAL, stat.totalSoldCount);
+                values.put(KEY_STAT_INTERESTCOUNT, stat.interestCount);
+                values.put(KEY_STAT_INTERESTTOTAL, stat.totalInterestCount);
 
-
-            // Notice how we haven't specified the primary key. SQLite auto increments the primary key column.
-            db.insertOrThrow(TABLE_STATS, null, values);
+                // Notice how we haven't specified the primary key. SQLite auto increments the primary key column.
+                db.insertOrThrow(TABLE_STATS, null, values);
+            }
             db.setTransactionSuccessful();
         }
         catch (SQLException e) {
-            Log.d(TAG, "SQLException: " + e.getMessage());
+            Log.d(TAG, "addStats(), SQLException: " + e.getMessage());
         }
         catch (Exception e) {
-            Log.d(TAG, "Error while trying to add post to database: " + e.getMessage());
+            Log.d(TAG, "addStats() Error: " + e.getMessage());
         } finally {
             db.endTransaction();
         }
     }
 
-    public void addProduct(Product product){
+    public void addProducts(List<Product> products){
         SQLiteDatabase db = getWritableDatabase();
 
         // It's a good idea to wrap our insert in a transaction. This helps with performance and ensures
         // consistency of the database.
         db.beginTransaction();
         try {
-            ContentValues values = new ContentValues();
-            values.put(KEY_PRODUCT_ID, product.id);
-            values.put(KEY_PRODUCT_NAME, product.name);
-            values.put(KEY_PRODUCT_PRICE, product.price);
-            values.put(KEY_PRODUCT_SELLERID, product.sellerId);
+            for (int i = 0; i < products.size(); i++) {
+                Product product = products.get(i);
+                ContentValues values = new ContentValues();
+                values.put(KEY_PRODUCT_ID, product.id);
+                values.put(KEY_PRODUCT_NAME, product.name);
+                values.put(KEY_PRODUCT_PRICE, product.price);
+                values.put(KEY_PRODUCT_SELLERID, product.sellerId);
 
-            // Notice how we haven't specified the primary key. SQLite auto increments the primary key column.
-            db.insertOrThrow(TABLE_PRODUCTS, null, values);
+                // Notice how we haven't specified the primary key. SQLite auto increments the primary key column.
+                db.insertOrThrow(TABLE_PRODUCTS, null, values);
+            }
             db.setTransactionSuccessful();
         }
         catch (SQLException e) {
-            Log.d(TAG, "SQLException: " + e.getMessage());
+            Log.d(TAG, "addProducts(), SQLException: " + e.getMessage());
         }
         catch (Exception e) {
-            Log.d(TAG, "Error while trying to add post to database: " + e.getMessage());
+            Log.d(TAG, "addProducts() Error: " + e.getMessage());
         } finally {
             db.endTransaction();
         }
@@ -200,10 +209,10 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
             db.setTransactionSuccessful();
         }
         catch (SQLException e) {
-            Log.d(TAG, "SQLException: " + e.getMessage());
+            Log.d(TAG, "addUser(), SQLException: " + e.getMessage());
         }
         catch (Exception e) {
-            Log.d(TAG, "Error while trying to add post to database: " + e.getMessage());
+            Log.d(TAG, "addUser Error: " + e.getMessage());
         } finally {
             db.endTransaction();
         }
@@ -223,17 +232,19 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(PRODUCTS_SELECT_QUERY, null);
         try {
-            if (cursor.moveToFirst()) {
-                do {
-                    Product newProduct = new Product(cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_ID)),
-                                                        cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_NAME)),
-                                                        cursor.getInt(cursor.getColumnIndex(KEY_PRODUCT_PRICE)),
-                                                        cursor.getInt(cursor.getColumnIndex(KEY_PRODUCT_SELLERID)));
-                    products.add(newProduct);
-                } while(cursor.moveToNext());
+            if(cursor != null && cursor.getCount() > 0) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        Product newProduct = new Product(cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_ID)),
+                                cursor.getString(cursor.getColumnIndex(KEY_PRODUCT_NAME)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_PRODUCT_PRICE)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_PRODUCT_SELLERID)));
+                        products.add(newProduct);
+                    } while(cursor.moveToNext());
+                }
             }
         } catch (Exception e) {
-            Log.d(TAG, "Error while trying to get products from database");
+            Log.d(TAG, "getProducts() Error: " + e.getMessage());
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
@@ -251,28 +262,55 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(STATS_SELECT_QUERY, null);
         try {
-            if (cursor.moveToFirst()) {
-                do {
-                    Stat newStat = new Stat(cursor.getString(cursor.getColumnIndex(KEY_STAT_DATE)),
-                            cursor.getString(cursor.getColumnIndex(KEY_STAT_DAYNAME)),
-                            cursor.getString(cursor.getColumnIndex(KEY_STAT_PRODUCTID)),
-                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_VIEWCOUNT)),
-                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_VIEWTOTAL)),
-                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_SOLDCOUNT)),
-                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_SOLDTOTAL)),
-                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_INTERESTCOUNT)),
-                            cursor.getInt(cursor.getColumnIndex(KEY_STAT_INTERESTTOTAL)));
-                    stats.add(newStat);
-                } while(cursor.moveToNext());
+            if(cursor != null && cursor.getCount() > 0) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        Stat newStat = new Stat(cursor.getString(cursor.getColumnIndex(KEY_STAT_DATE)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_DATEEPOCH)),
+                                cursor.getString(cursor.getColumnIndex(KEY_STAT_DAYNAME)),
+                                cursor.getString(cursor.getColumnIndex(KEY_STAT_PRODUCTID)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_VIEWCOUNT)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_VIEWTOTAL)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_SOLDCOUNT)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_SOLDTOTAL)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_INTERESTCOUNT)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_INTERESTTOTAL)));
+                        stats.add(newStat);
+                    } while(cursor.moveToNext());
+                }
             }
         } catch (Exception e) {
-            Log.d(TAG, "Error while trying to get stats from database");
+            Log.d(TAG, "getStats() Error: " + e.getMessage());
         } finally {
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
         }
         return stats;
+    }
+
+    public void deleteStats(String[] productIds) {
+        if(productIds.length > 0){
+            SQLiteDatabase db = getWritableDatabase();
+
+            db.beginTransaction();
+            try {
+                String joined = TextUtils.join("\",\"",productIds);
+                String args = "\"" + joined + "\"";
+                String query = String.format("DELETE FROM %s WHERE %s IN (%s)", TABLE_STATS, KEY_STAT_PRODUCTID, args);
+                db.execSQL(query);
+
+                db.setTransactionSuccessful();
+            }
+            catch (SQLException e) {
+                Log.d(TAG, "deleteStats(), SQLException: " + e.getMessage());
+            }
+            catch (Exception e) {
+                Log.d(TAG, "deleteStats Error: " + e.getMessage());
+            } finally {
+                db.endTransaction();
+            }
+        }
     }
 
     public void fetchUsers(final Context context) {
