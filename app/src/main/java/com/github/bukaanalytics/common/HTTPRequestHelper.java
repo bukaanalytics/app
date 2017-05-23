@@ -118,7 +118,15 @@ public class HTTPRequestHelper {
                                 int soldTotal = stat.get("sold_total").getAsInt();
                                 int interestCount = stat.get("interest_count").getAsInt();
                                 int interestTotal = stat.get("interest_total").getAsInt();
-                                Stat newStat = new Stat(date, dateEpoch,dayName, productId, viewCount, viewTotal, soldCount, soldTotal, interestCount, interestTotal);
+
+                                int marketViewCount = stat.get("market_view_count").getAsInt();
+                                int marketViewTotal = stat.get("market_view_total").getAsInt();
+                                int marketSoldCount = stat.get("market_sold_count").getAsInt();
+                                int marketSoldTotal = stat.get("market_sold_total").getAsInt();
+                                int marketInterestCount = stat.get("market_interest_count").getAsInt();
+                                int marketInterestTotal = stat.get("market_interest_total").getAsInt();
+
+                                Stat newStat = new Stat(date, dateEpoch,dayName, productId, viewCount, viewTotal, soldCount, soldTotal, interestCount, interestTotal, marketViewCount, marketViewTotal, marketSoldCount, marketSoldTotal, marketInterestCount, marketInterestTotal);
 
                                 statList.add(newStat);
                             }

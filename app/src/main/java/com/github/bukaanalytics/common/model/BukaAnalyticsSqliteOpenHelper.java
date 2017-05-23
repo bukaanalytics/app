@@ -56,6 +56,13 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
     private static final String KEY_STAT_INTERESTCOUNT = "interest_count";
     private static final String KEY_STAT_INTERESTTOTAL = "interest_total";
 
+    private static final String KEY_STAT_MARKETVIEWCOUNT = "market_view_count";
+    private static final String KEY_STAT_MARKETVIEWTOTAL = "market_view_total";
+    private static final String KEY_STAT_MARKETSOLDCOUNT = "market_sold_count";
+    private static final String KEY_STAT_MARKETSOLDTOTAL = "market_sold_total";
+    private static final String KEY_STAT_MARKETINTERESTCOUNT = "market_interest_count";
+    private static final String KEY_STAT_MARKETINTERESTTOTAL = "market_interest_total";
+
     private static final String MLAB_API_KEY = "8wDpSrJX4XU4tX_ff56Y39I98Tnn4xb0";
 
     // Instance
@@ -97,6 +104,12 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
                 KEY_STAT_SOLDTOTAL + " INTEGER," +
                 KEY_STAT_INTERESTCOUNT + " INTEGER," +
                 KEY_STAT_INTERESTTOTAL + " INTEGER," +
+                KEY_STAT_MARKETVIEWCOUNT + " INTEGER," +
+                KEY_STAT_MARKETVIEWTOTAL + " INTEGER," +
+                KEY_STAT_MARKETSOLDCOUNT + " INTEGER," +
+                KEY_STAT_MARKETSOLDTOTAL + " INTEGER," +
+                KEY_STAT_MARKETINTERESTCOUNT + " INTEGER," +
+                KEY_STAT_MARKETINTERESTTOTAL + " INTEGER," +
                 "FOREIGN KEY("+KEY_STAT_PRODUCTID+") REFERENCES "+TABLE_PRODUCTS+"("+KEY_PRODUCT_ID+")"+
                 ")";
 
@@ -146,6 +159,13 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
                 values.put(KEY_STAT_SOLDTOTAL, stat.totalSoldCount);
                 values.put(KEY_STAT_INTERESTCOUNT, stat.interestCount);
                 values.put(KEY_STAT_INTERESTTOTAL, stat.totalInterestCount);
+
+                values.put(KEY_STAT_MARKETVIEWCOUNT, stat.marketViewCount);
+                values.put(KEY_STAT_MARKETVIEWTOTAL, stat.marketTotalViewCount);
+                values.put(KEY_STAT_MARKETSOLDCOUNT, stat.marketSoldCount);
+                values.put(KEY_STAT_MARKETSOLDTOTAL, stat.marketTotalSoldCount);
+                values.put(KEY_STAT_MARKETINTERESTCOUNT, stat.marketInterestCount);
+                values.put(KEY_STAT_MARKETINTERESTTOTAL, stat.marketTotalInterestCount);
 
                 // Notice how we haven't specified the primary key. SQLite auto increments the primary key column.
                 db.insertOrThrow(TABLE_STATS, null, values);
@@ -273,7 +293,13 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
                                 cursor.getInt(cursor.getColumnIndex(KEY_STAT_SOLDCOUNT)),
                                 cursor.getInt(cursor.getColumnIndex(KEY_STAT_SOLDTOTAL)),
                                 cursor.getInt(cursor.getColumnIndex(KEY_STAT_INTERESTCOUNT)),
-                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_INTERESTTOTAL)));
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_INTERESTTOTAL)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_MARKETVIEWCOUNT)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_MARKETVIEWTOTAL)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_MARKETSOLDCOUNT)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_MARKETSOLDTOTAL)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_MARKETINTERESTCOUNT)),
+                                cursor.getInt(cursor.getColumnIndex(KEY_STAT_MARKETINTERESTTOTAL)));
                         stats.add(newStat);
                     } while(cursor.moveToNext());
                 }
