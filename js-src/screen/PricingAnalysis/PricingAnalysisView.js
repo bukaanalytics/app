@@ -169,8 +169,12 @@ class PricingAnalysis extends Component{
               options={this.FORM_OPTIONS}
             />
 
-
-            <Icon name="filter" size={32} style={{margin: 10, color:'#fff'}} />
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => { this.props.navigation.navigate('FilterScreen')}}
+            >
+              <Icon name="filter" size={32} style={{margin: 10, color:'#fff'}} />
+            </TouchableOpacity>
           </View>
         </SubHeader>
 
