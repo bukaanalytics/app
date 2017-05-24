@@ -46,7 +46,8 @@ class PricingAnalysis extends Component{
 
   submitForm(){
     const form = this.form.getValue();
-    this.props.getGraph(form.search);
+    const pricing_filter = this.props.pricing_filter;
+    this.props.getGraph(form.search, pricing_filter);
   }
 
   renderbar(){
@@ -97,7 +98,6 @@ class PricingAnalysis extends Component{
     if (graphdata.length > 0) {
       let test_data = [];
       graphdata.forEach(g => {
-        console.log(g);
         test_data.push([g]);
       });
       data = test_data;

@@ -114,35 +114,19 @@ const FORM_NEGOTIABLE = FormWrapper.enums({
 
 const FORM_PRICING = FormWrapper.struct({
   kategori: FormWrapper.maybe(FORM_CATEGORIES),
+  province: FormWrapper.maybe(FORM_PROVINCES),
+  city: FormWrapper.maybe(FormWrapper.String),
   bisa_nego: FormWrapper.maybe(FORM_NEGOTIABLE),
   top_seller: FormWrapper.maybe(FormWrapper.Boolean),
   condtions: FormWrapper.maybe(FORM_CONDITIONS), // conditions
   price_min: FormWrapper.maybe(FormWrapper.Number),
   price_max: FormWrapper.maybe(FormWrapper.Number),
-  province: FormWrapper.maybe(FORM_PROVINCES),
-  city: FormWrapper.maybe(FormWrapper.String),
 });
-
-const FORM_OPTIONS = {
-  stylesheet: styling,
-  i18n: {
-    optional: '',
-  },
-  fields: {
-    city: {
-      factory: AutoInput,
-      config: {
-        elements: ['Denpasar', 'Bandung', 'Banjar', 'Batu', 'Bekasi', 'Blitar', 'Bogor', 'Cianjur', 'Cilegon', 'Cimahi', 'Cirebon', 'Depok', 'Jakarta', 'Kediri', 'Madiun', 'Magelang', 'Malang', 'Mojokerto', 'Pasuruan', 'Pekalongan', 'Probolinggo', 'Salatiga', 'Semarang', 'Serang', 'South', 'Sukabumi', 'Surabaya', 'Surakarta', 'Tasikmalaya', 'Tangerang', 'Tegal', 'Yogyakarta', 'Balikpapan', 'Banjarbaru', 'Banjarmasin', 'Bontang', 'Palangkaraya', 'Pontianak', 'Samarinda', 'Singkawang', 'Tarakan', 'Tenggarong', 'Ambon', 'Tual', 'Ternate', 'Tidore', 'Bima', 'Mataram', 'Kupang', 'Atambua', 'Jayapura', 'Merauke', 'Kota Sorong', 'Manokwari', 'Bau-Bau', 'Bitung', 'Gorontalo', 'Kendari', 'Kotamobagu', 'Makassar', 'Manado', 'Palu', 'Pare-Pare', 'Palopo', 'Tomohon', 'Banda Aceh', 'Bandar Lampung', 'Batam	Batam', 'Bengkulu', 'Binjai', 'Bukittinggi', 'Dumai', 'Gunungsitoli', 'Jambi', 'Langsa', 'Lhokseumawe', 'Lubuklinggau', 'Medan', 'Metro', 'Padang', 'Padang Panjang', 'Padang Sidempuan', 'Pagar Alam', 'Palembang', 'Pangkal Pinang', 'Pariaman', 'Payakumbuh', 'Pekanbaru', 'Pematang Siantar', 'Prabumulih', 'Sabang', 'Sawah Lunto', 'Sibolga', 'Solok', 'Sungai Penuh', 'Tanjung Balai', 'Tanjung Pinang', 'Tebing Tinggi'],
-        propForQuery: 'name',
-      },
-      label: 'City',
-    },
-  },
-};
 
 // === Main Component ===
 class PricingFilter extends Component {
   navigation = null;
+
 
   static navigationOptions = {
     title: 'Advanced Filter',
@@ -161,14 +145,96 @@ class PricingFilter extends Component {
     navigation = this.props.navigation;
   }
 
+  handleSubmit() {
+    const value = this.form.getValue();
+    console.log("getvalue di handlesubmit",value);
+    if (value) {
+      this.props.setData('category_id', parseInt(value.kategori.replace("_","")));
+
+      if (value.bisa_nego == 'all_prices') {
+        this.props.setData('nego', 1);
+        this.props.setData('harga_pas', 1);
+      } else if (value.bisa_nego == 'nego_only') {
+        this.props.setData('nego', 1);
+        this.props.setData('harga_pas', 0);
+      } else if (value.bisa_nego == 'fixed_only') {
+        this.props.setData('nego', 0);
+        this.props.setData('harga_pas', 1);
+      }
+
+      if (value.top_seller) {
+        this.props.setData('top_seller', 1);
+      } else {
+        this.props.setData('top_seller', 0);
+      }
+
+      if (value.conditions == 'all_conditions') {
+        this.props.setData('conditions', 'new');
+      } else if (value.conditions == 'new_conditions') {
+        this.props.setData('conditions', 'new');
+      } else if (value.conditions == 'second_conditions') {
+        this.props.setData('conditions', 'used');
+      }
+
+      this.props.setData('price_min', value.price_min);
+      this.props.setData('price_max', value.price_max);
+
+      if (value.province && value.city) {
+        this.props.setData('province', value.province.replace("_"," "));
+        this.props.setData('city', value.city);
+      }
+
+    }
+  }
+
   render() {
+    let FORM_VALUE = {
+      category_id: "_159",
+      city: "Jakarta",
+    };
+
+    if (this.props.form_value ) {
+        FORM_VALUE = {
+          category_id: this.props.form_value.category_id,
+        };
+    }
+
+    const FORM_OPTIONS = {
+      stylesheet: styling,
+      i18n: {
+        optional: '',
+      },
+      fields: {
+        city: {
+          factory: AutoInput,
+          config: {
+            elements: ['Denpasar', 'Bandung', 'Banjar', 'Batu', 'Bekasi', 'Blitar', 'Bogor', 'Cianjur', 'Cilegon', 'Cimahi', 'Cirebon', 'Depok', 'Jakarta', 'Kediri', 'Madiun', 'Magelang', 'Malang', 'Mojokerto', 'Pasuruan', 'Pekalongan', 'Probolinggo', 'Salatiga', 'Semarang', 'Serang', 'South', 'Sukabumi', 'Surabaya', 'Surakarta', 'Tasikmalaya', 'Tangerang', 'Tegal', 'Yogyakarta', 'Balikpapan', 'Banjarbaru', 'Banjarmasin', 'Bontang', 'Palangkaraya', 'Pontianak', 'Samarinda', 'Singkawang', 'Tarakan', 'Tenggarong', 'Ambon', 'Tual', 'Ternate', 'Tidore', 'Bima', 'Mataram', 'Kupang', 'Atambua', 'Jayapura', 'Merauke', 'Kota Sorong', 'Manokwari', 'Bau-Bau', 'Bitung', 'Gorontalo', 'Kendari', 'Kotamobagu', 'Makassar', 'Manado', 'Palu', 'Pare-Pare', 'Palopo', 'Tomohon', 'Banda Aceh', 'Bandar Lampung', 'Batam	Batam', 'Bengkulu', 'Binjai', 'Bukittinggi', 'Dumai', 'Gunungsitoli', 'Jambi', 'Langsa', 'Lhokseumawe', 'Lubuklinggau', 'Medan', 'Metro', 'Padang', 'Padang Panjang', 'Padang Sidempuan', 'Pagar Alam', 'Palembang', 'Pangkal Pinang', 'Pariaman', 'Payakumbuh', 'Pekanbaru', 'Pematang Siantar', 'Prabumulih', 'Sabang', 'Sawah Lunto', 'Sibolga', 'Solok', 'Sungai Penuh', 'Tanjung Balai', 'Tanjung Pinang', 'Tebing Tinggi'],
+            propForQuery: 'name',
+          },
+          label: 'City',
+        },
+        category_id: {
+          selectedValue: '_159'
+        }
+      },
+    };
+
     return (
       <View style={AppStyles.container}>
         <View style={[styles.formArea]}>
           <ScrollView style={[styles.scrollview, AppStyles.paddingLeft, AppStyles.paddingRight]}>
             <Form
-              ref="form"
+              ref={f => this.form = f}
               type={FORM_PRICING}
+              value={{
+                kategori: this.props.form_value.kategori,
+                bisa_nego: this.props.form_value.bisa_nego,
+                top_seller: this.props.form_value.top_seller,
+                province: this.props.form_value.province,
+                city: this.props.form_value.city,
+                price_min: this.props.form_value.price_min,
+                price_max: this.props.form_value.price_max,
+              }}
               options={FORM_OPTIONS}
             />
           </ScrollView>
@@ -177,13 +243,19 @@ class PricingFilter extends Component {
           <Button
           style={AppStyles.flex1}
           title="Reset Filter"
-          onPress={()=>{this.props.navigation.navigate('PricingAnalysis')}}
+          onPress={()=>{
+            this.props.navigation.navigate('PricingAnalysis');
+            this.props.resetData();
+          }}
           color="#aaa"
           />
           <Button
             style={AppStyles.flex1}
             title="Save Filter"
-            onPress={()=>{this.props.navigation.navigate('PricingAnalysis')}}
+            onPress={()=>{
+              this.handleSubmit();
+              this.props.navigation.navigate('PricingAnalysis')
+            }}
           />
         </View>
       </View>

@@ -74,18 +74,21 @@ class BLApi {
     }, err => errorCallback(err))
   }
 
-  static getProducts(page, keyword) {
+  static getProducts(page, keyword, filter = {}) {
     return axios.get(API_PRODUCTS, {
       params: {
         page: page || 0,
         per_page: 24,
         keywords: keyword || '',
-        // category_id: filter.category_id || '',
-        // province: filter.province || '',
-        // city: filter.city || '',
-        // price_min: filter.price_min || 0,
-        // price_max: filter.price_max || 99999999999,
-        // sort_by: filter.sort_by || 'Termurah', // Termahal, Terbaru, Acak
+        category_id: filter.category_id || '',
+        nego: filter.nego || 1,
+        harga_pas: filter.harga_pas || 1,
+        province: filter.province || 'Jawa Barat',
+        top_seller: filter.top_seller || 0,
+        city: filter.city || 'Jakarta',
+        price_min: filter.price_min || 0,
+        price_max: filter.price_max || 999999999,
+        sort_by: filter.sort_by || 'Termurah', // Termahal, Terbaru, Acak
       },
     });
   }
@@ -95,60 +98,73 @@ class BLApi {
   // =============================
 
   static mathAnalysis(result) {
-    const prices = result.sort((a, b) => {
-      return a.price - b.price;
-    });
+    if ( result != null  && result.length > 0 ) {
+      const prices = result.sort((a, b) => {
+        return a.price - b.price;
+      });
 
-    const max_price = prices[prices.length - 1].price;
-    const min_price = prices[0].price;
-    let avg_price = 0;
+      const max_price = prices[prices.length - 1].price;
+      const min_price = prices[0].price;
+      let avg_price = 0;
 
-    const num_class_interval = Math.round(1 + 3.3 * Math.log10(prices.length));
-    const range = max_price - min_price;
-    console.log(this);
-    const summary = this.initSummary(num_class_interval);
+      const num_class_interval = Math.round(1 + 3.3 * Math.log10(prices.length));
+      const range = max_price - min_price;
+      console.log(this);
+      const summary = this.initSummary(num_class_interval);
 
-    for (let i = prices.length - 1; i >= 0; i--) {
-      avg_price = avg_price + prices[i].price;
-      prices[i].class = this.checkClassRange(prices[i].price, min_price, range, num_class_interval);
+      for (let i = prices.length - 1; i >= 0; i--) {
+        avg_price = avg_price + prices[i].price;
+        prices[i].class = this.checkClassRange(prices[i].price, min_price, range, num_class_interval);
 
-      const text = `_${prices[i].class}`;
+        const text = `_${prices[i].class}`;
 
-      summary[text].avg_price = summary[text].avg_price + prices[i].price;
-      summary[text].avg_sold = summary[text].avg_sold + prices[i].sold;
-      summary[text].count = summary[text].count + 1;
+        summary[text].avg_price = summary[text].avg_price + prices[i].price;
+        summary[text].avg_sold = summary[text].avg_sold + prices[i].sold;
+        summary[text].count = summary[text].count + 1;
+      }
+
+      const profit = {};
+      for (let i = num_class_interval - 1; i >= 0; i--) {
+        const text = `_${i + 1}`;
+        // safe division by zero.. not to trigger NaN
+        summary[text].avg_price = (summary[text].count > 0 ? summary[text].avg_price / summary[text].count : 0);
+        summary[text].avg_sold = (summary[text].count > 0 ? summary[text].avg_sold / summary[text].count : 0);
+
+        profit[text] = summary[text].avg_price * summary[text].avg_sold;
+      }
+
+      // find best price
+      const best_price_index = this.findBestPrice(profit);
+      const best_price = summary[best_price_index].avg_price;
+
+      //generategraphdata
+      const graph = this.generateGraphData(summary, num_class_interval);
+
+      // calculate avg_price
+      avg_price = avg_price / prices.length;
+
+      const retval = {
+        min_price,
+        max_price,
+        avg_price,
+        best_price,
+        summary,
+        graph,
+      };
+      return retval;
+
+    }else{
+
+      const retval = {
+        min_price : 0,
+        max_price : 0,
+        avg_price : 0,
+        best_price : 0,
+        summary : null,
+        graph: [],
+      };
+      return retval;
     }
-
-    const profit = {};
-    for (let i = num_class_interval - 1; i >= 0; i--) {
-      const text = `_${i + 1}`;
-      // safe division by zero.. not to trigger NaN
-      summary[text].avg_price = (summary[text].count > 0 ? summary[text].avg_price / summary[text].count : 0);
-      summary[text].avg_sold = (summary[text].count > 0 ? summary[text].avg_sold / summary[text].count : 0);
-
-      profit[text] = summary[text].avg_price * summary[text].avg_sold;
-    }
-
-    // find best price
-    const best_price_index = this.findBestPrice(profit);
-    const best_price = summary[best_price_index].avg_price;
-
-    //generategraphdata
-    const graph = this.generateGraphData(summary, num_class_interval);
-
-    // calculate avg_price
-    avg_price = avg_price / prices.length;
-
-    const retval = {
-      min_price,
-      max_price,
-      avg_price,
-      best_price,
-      summary,
-      graph,
-    };
-
-    return retval;
   }
 
   // =============================

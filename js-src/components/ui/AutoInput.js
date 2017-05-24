@@ -144,7 +144,6 @@ const styles = StyleSheet.create({
     // `backgroundColor` needs to be set otherwise the
     // autocomplete input will disappear on text input.
     marginTop: 25,
-    height: 100,
   },
   infoText: {
     textAlign: 'center',
