@@ -40,13 +40,15 @@ public class BukaAnalyticsIntentService extends IntentService {
                 for (int i = 0; i < productsResult.size(); i++) {
                     productIds.add(productsResult.get(i).id);
                 }
-                String[] productIdsArray = productIds.toArray(new String[0]);
+                final String[] productIdsArray = productIds.toArray(new String[0]);
 
                 //Get stat list from cloud database, for all product ids
                 HTTPHelper.fetchStats(productIdsArray, getApplicationContext(), new HTTPRequestHelper.StatsCallback() {
                     @Override
                     public void onCompleted(Exception e, List<Stat> statsResult) {
                         if((statsResult != null) && (statsResult.size() > 0)) {
+                            //Current solution for 'Stats' table without unique column
+                            db.deleteStats(productIdsArray);
                             //Insert stats into local database
                             db.addStats(statsResult);
                         }
