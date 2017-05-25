@@ -34,12 +34,12 @@
             android:layout_width="0dp">
             <TextView
                 android:layout_gravity="center"
-                android:text="Unread Message"
+                android:text="Order Baru"
                 android:gravity="center"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"/>
             <TextView
-                android:id="@+id/textView_content_unread_msg"
+                android:id="@+id/textView_content_new_order"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text=""
@@ -63,6 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"/>
             <TextView
+                android:id="@+id/textView_content_unread_msg"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="test2"
@@ -82,10 +83,11 @@
             <TextView
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="Unread Message"
+                android:text="Product Complaint"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"/>
             <TextView
+                android:id="@+id/textView_content_complaint"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="test3"
@@ -105,10 +107,11 @@
             <TextView
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="Unread Message"
+                android:text="Nego"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"/>
             <TextView
+                android:id="@+id/textView_content_nego"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="test4"
