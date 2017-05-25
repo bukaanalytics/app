@@ -1,6 +1,7 @@
 package com.github.bukaanalytics.common;
 
 import android.content.Context;
+import android.util.Base64;
 import android.util.Log;
 
 import com.github.bukaanalytics.common.model.Product;
@@ -26,6 +27,10 @@ public class HTTPRequestHelper {
         void onCompleted(Exception e, JsonArray result);
     }
 
+    public interface JSONObjectCallback {
+        void onCompleted(Exception e, JsonObject result);
+    }
+
     public interface ProductsCallback {
         void onCompleted(Exception e, List<Product> productsResult);
     }
@@ -35,6 +40,7 @@ public class HTTPRequestHelper {
     }
 
     private JSONArrayCallback jsonArrayCallback;
+    private JSONObjectCallback jsonObjectCallback;
     private ProductsCallback productsCallback;
     private StatsCallback statsCallback;
 
@@ -57,6 +63,28 @@ public class HTTPRequestHelper {
                 jsonArrayCallback.onCompleted(e, result);
             }
         });
+
+    }
+
+    public void getAsJSONObject(String URL, final Context context, final JSONObjectCallback callback) {
+        this.jsonObjectCallback = callback;
+
+        // ini perlu di refactor
+        String appended = "32856476:9RQ3MbQlP4Fac16iv4e";
+        String auth= Base64.encodeToString(appended.getBytes(), Base64.NO_WRAP);
+
+        Ion.with(context)
+                .load(URL)
+                .setHeader("Authorization", "Basic " + auth)
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        // next perlu cek http status code nya 200 atau engga
+                        Log.d(TAG, "onCompleted: "+result);
+                        jsonObjectCallback.onCompleted(e, result);
+                    }
+                });
 
     }
 

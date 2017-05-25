@@ -5,29 +5,21 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Base64;
+import android.nfc.Tag;
+import android.util.Log;
 import android.widget.RemoteViews;
 
-import com.github.bukaanalytics.ApiClient;
-import com.github.bukaanalytics.ApiInterface;
 import com.github.bukaanalytics.R;
+import com.github.bukaanalytics.common.HTTPRequestHelper;
+import com.google.gson.JsonObject;
 
-import java.io.IOException;
 import java.util.Random;
-
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by fawwaz.muhammad on 04/05/17.
  */
 
 public class BukaAnalyticsAppWidgetProvider extends AppWidgetProvider {
-    ApiInterface apiInterface;
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -36,14 +28,10 @@ public class BukaAnalyticsAppWidgetProvider extends AppWidgetProvider {
 
         for (int i = 0; i < count; i++) {
             int widgetId = appWidgetIds[i];
-            String number = String.format("%03d", (new Random().nextInt(900) + 100));
-            String newOrderStr = "0";
 
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget);
-            remoteViews.setTextViewText(R.id.textView_content_new_order, newOrderStr);
-            remoteViews.setTextViewText(R.id.textView_content_unread_msg, number);
-            remoteViews.setTextViewText(R.id.textView_content_complaint, number);
-            remoteViews.setTextViewText(R.id.textView_content_nego, number);
+
+            getUnread(context, appWidgetManager, remoteViews, widgetId);
 
             Intent intent = new Intent(context, BukaAnalyticsAppWidgetProvider.class);
             intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
@@ -52,22 +40,25 @@ public class BukaAnalyticsAppWidgetProvider extends AppWidgetProvider {
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
                     0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            appWidgetManager.updateAppWidget(widgetId, remoteViews);
+//            appWidgetManager.updateAppWidget(widgetId, remoteViews);
         }
     }
 
-    private void getNewOrder() {
-        Call call = apiInterface.getUnreadNotifications();
-        call.enqueue(new Callback() {
+    private void getUnread(Context context, final AppWidgetManager appWidgetManager, final RemoteViews remoteViews, final int widgetId) {
+        HTTPRequestHelper helper = new HTTPRequestHelper();
+        helper.getAsJSONObject("https://api.bukalapak.com/v2/notifications/unreads.json", context.getApplicationContext(), new HTTPRequestHelper.JSONObjectCallback() {
             @Override
-            public void onResponse(Call call, Response response) {
-                // set new order di sini
-            }
+            public void onCompleted(Exception e, JsonObject result) {
+                String needAction = result.get("transactions_need_action_as_seller").getAsString();
+                String unreadMsg = result.get("messages").getAsString();
 
-            @Override
-            public void onFailure(Call call, Throwable t) {
+                remoteViews.setTextViewText(R.id.textView_content_need_action, needAction);
+                remoteViews.setTextViewText(R.id.textView_content_unread_msg, unreadMsg);
 
+                appWidgetManager.updateAppWidget(widgetId, remoteViews);
             }
         });
     }
+
+    private void getUnreadMessage()
 }

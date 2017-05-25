@@ -34,12 +34,12 @@
             android:layout_width="0dp">
             <TextView
                 android:layout_gravity="center"
-                android:text="Order Baru"
+                android:text="Need Action"
                 android:gravity="center"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"/>
             <TextView
-                android:id="@+id/textView_content_new_order"
+                android:id="@+id/textView_content_need_action"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text=""
@@ -66,7 +66,7 @@
                 android:id="@+id/textView_content_unread_msg"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="test2"
+                android:text=""
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"/>
         </LinearLayout>
