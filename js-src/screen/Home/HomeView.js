@@ -194,12 +194,12 @@ class Home extends Component {
 
           <Text style={styles.sectionTitle}>Most Viewed Product</Text>
           <View style={styles.overviewContainer}>
-            <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource_most_viewed} />
+            <Table columnWidth={115} height={250} columns={columns} dataSource={dataSource_most_viewed} />
           </View>
 
           <Text style={styles.sectionTitle}>Least Viewed Product</Text>
           <View style={styles.overviewContainer}>
-            <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource_least_viewed} />
+            <Table columnWidth={115} height={250} columns={columns} dataSource={dataSource_least_viewed} />
           </View>
         </ScrollView>
       </View>
@@ -296,7 +296,9 @@ const styles = {
     ...AppStyles.spreadHorizontalContainer,
     ...AppStyles.paddingHorizontal,
     backgroundColor: AppColors.brand.lightPrimary,
-    elevation: 4
+    elevation: 4,
+    height: 56,
+    alignItems: 'center',
   },
   overviewContainer: {
     ...AppStyles.row,

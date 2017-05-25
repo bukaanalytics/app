@@ -5,6 +5,7 @@ import nav from '@redux/nav/reducer';
 import user from '@redux/user/reducer';
 import pricing from '@redux/pricing/reducer';
 import pricing_filter from '@redux/pricing_filter/reducer';
+import bidding from '@redux/bidding/reducer';
 
 // Combine all
 const appReducer = combineReducers({
@@ -13,6 +14,7 @@ const appReducer = combineReducers({
   user,
   pricing,
   pricing_filter,
+  bidding,
 });
 
 // Setup root reducer

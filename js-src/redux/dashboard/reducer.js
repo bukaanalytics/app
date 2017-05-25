@@ -88,6 +88,6 @@ export default function dashboardReducer(state = initialState, action) {
         [action.key]: action.value,
       };
     default:
-      return initialState
+      return state;
   }
 }

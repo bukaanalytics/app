@@ -131,6 +131,7 @@ class BLSqlite {
   }
 
   getBidSuggestion(param, callback) {
+    console.log('param is :',param );
     this.db.executeSql(`
       SELECT name,
              ( ratio * price * 0.1 ) AS bid_suggestion
@@ -142,20 +143,20 @@ class BLSqlite {
                                 ( with_ads.view_iklan -
                                          without_ads.VIEW ) )
                        END ) AS ratio
-              FROM   (SELECT Avg(${config.col.stats.view_count}) AS view_iklan,
-                             Avg(${config.col.stats.sold_count}) AS sold_iklan,
-                             ${config.col.stats.products_id}
-                      FROM   ${config.tables.stats}
-                      WHERE  DATE BETWEEN ? AND ?
-                      GROUP  BY ${config.col.stats.products_id}) AS with_ads
-                     JOIN (SELECT Avg(${config.col.stats.view_count}) AS VIEW,
-                                  Avg(${config.col.stats.sold_count}) AS sold,
-                                  ${config.col.stats.products_id}
-                           FROM   ${config.tables.stats}
-                           WHERE  DATE BETWEEN ? AND ?
-                           GROUP  BY ${config.col.stats.products_id}) AS without_ads
-                       ON with_ads.${config.col.stats.products_id} = without_ads.${config.col.stats.products_id}
-             WHERE  ratio > 0) AS A
+              FROM   (SELECT Avg(view_count) AS view_iklan,
+                             Avg(sold_count) AS sold_iklan,
+                             product_id
+                      FROM   stats
+                      WHERE  date BETWEEN ? AND ?
+                      GROUP  BY product_id) AS with_ads
+                     JOIN (SELECT Avg(view_count) AS VIEW,
+                                  Avg(sold_count) AS sold,
+                                  product_id
+                           FROM   stats
+                           WHERE  date BETWEEN ? AND ?
+                           GROUP  BY product_id) AS without_ads
+                       ON with_ads.product_id = without_ads.product_id
+              WHERE  ratio > 0) AS A
              JOIN products AS B
                ON A.product_id = B.product_id
       `, [param.start_ads, param.end_ads, param.start_no_ads, param.end_no_ads], results => {

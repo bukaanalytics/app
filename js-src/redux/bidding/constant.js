@@ -1,0 +1,1 @@
+export const BIDDING_ACTION_SET = 'BIDDING_ACTION_SET';
