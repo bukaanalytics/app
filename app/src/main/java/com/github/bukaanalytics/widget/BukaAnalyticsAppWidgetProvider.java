@@ -59,6 +59,4 @@ public class BukaAnalyticsAppWidgetProvider extends AppWidgetProvider {
             }
         });
     }
-
-    private void getUnreadMessage()
 }
