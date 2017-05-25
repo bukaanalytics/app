@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 import android.util.Log;
-import android.database.MatrixCursor;
 
 import com.github.bukaanalytics.common.HTTPRequestHelper;
 import com.google.gson.JsonArray;
@@ -69,7 +68,7 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
     // Instance
     private static BukaAnalyticsSqliteOpenHelper sInstance;
 
-    public BukaAnalyticsSqliteOpenHelper(Context context) {
+    private BukaAnalyticsSqliteOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -377,106 +376,4 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
                     }
                 });
     }
-
-    public void fetchProductsAndStats(int userId, final Context context) {
-//        String query = "{'seller_id':" + userId + "}";
-        HTTPRequestHelper httpRequestHelper = new HTTPRequestHelper();
-        httpRequestHelper.getAsJSONArray("https://api.mlab.com/api/1/databases/bukaanalytics/collections/products?q={'seller_id':" + userId + "}&apiKey=" + MLAB_API_KEY,
-            context.getApplicationContext(), new HTTPRequestHelper.JSONArrayCallback() {
-                @Override
-                public void onCompleted(Exception e, JsonArray result) {
-                Log.d(TAG, "fetchProductsAndStats onCompleted: " + result);
-                BukaAnalyticsSqliteOpenHelper db = BukaAnalyticsSqliteOpenHelper.getInstance(context);
-                ArrayList<Product> productList = new ArrayList<Product>();
-                for (int i = 0; i < result.size(); i++) {
-                    JsonObject product = result.get(i).getAsJsonObject();
-                    String id = product.get("product_id").getAsString();
-                    String name = product.get("name").getAsString();
-                    int price = product.get("price").getAsInt();
-                    int sellerId = product.get("seller_id").getAsInt();
-                    Product newProduct = new Product(id, name, price, sellerId);
-
-                    productList.add(newProduct);
-                    db.addProduct(newProduct);
-                }
-                fetchStats(productList, context);
-                }
-            });
-    }
-
-    public void fetchStats(ArrayList<Product> products, final Context context) {
-        for (int i = 0; i < products.size(); i++) {
-            HTTPRequestHelper httpRequestHelper = new HTTPRequestHelper();
-            Log.d(TAG, "https://api.mlab.com/api/1/databases/bukaanalytics/collections/stats?q={'product_id':" + products.get(i).id + "}&apiKey=" + MLAB_API_KEY);
-            httpRequestHelper.getAsJSONArray("https://api.mlab.com/api/1/databases/bukaanalytics/collections/stats?q={'product_id':'" + products.get(i).id + "'}&apiKey=" + MLAB_API_KEY,
-                context.getApplicationContext(), new HTTPRequestHelper.JSONArrayCallback() {
-                    @Override
-                    public void onCompleted(Exception e, JsonArray result) {
-                        Log.d(TAG, "fetchStats onCompleted: " + result);
-                        BukaAnalyticsSqliteOpenHelper db = BukaAnalyticsSqliteOpenHelper.getInstance(context);
-                        for (int i = 0; i < result.size(); i++) {
-                            JsonObject stat = result.get(i).getAsJsonObject();
-                            String date = stat.get("date").getAsString();
-                            String dayName = stat.get("day_name").getAsString();
-                            String productId = stat.get("product_id").getAsString();
-                            int viewCount = stat.get("view_count").getAsInt();
-                            int viewTotal = stat.get("view_total").getAsInt();
-                            int soldCount = stat.get("sold_count").getAsInt();
-                            int soldTotal = stat.get("sold_total").getAsInt();
-                            int interestCount = stat.get("interest_count").getAsInt();
-                            int interestTotal = stat.get("interest_total").getAsInt();
-                            Stat newStat = new Stat(date, dayName, productId, viewCount, viewTotal, soldCount, soldTotal, interestCount, interestTotal);
-
-                            db.addStat(newStat);
-                        }
-
-                    }
-                });
-        }
-    }
-
-    public ArrayList<Cursor> getData(String Query){
-        //get writable database
-        SQLiteDatabase sqlDB = this.getWritableDatabase();
-        String[] columns = new String[] { "message" };
-        //an array list of cursor to save two cursors one has results from the query
-        //other cursor stores error message if any errors are triggered
-        ArrayList<Cursor> alc = new ArrayList<Cursor>(2);
-        MatrixCursor Cursor2= new MatrixCursor(columns);
-        alc.add(null);
-        alc.add(null);
-
-        try{
-            String maxQuery = Query ;
-            //execute the query results will be save in Cursor c
-            Cursor c = sqlDB.rawQuery(maxQuery, null);
-
-            //add value to cursor2
-            Cursor2.addRow(new Object[] { "Success" });
-
-            alc.set(1,Cursor2);
-            if (null != c && c.getCount() > 0) {
-
-                alc.set(0,c);
-                c.moveToFirst();
-
-                return alc ;
-            }
-            return alc;
-        } catch(SQLException sqlEx){
-            Log.d("printing exception", sqlEx.getMessage());
-            //if any exceptions are triggered save the error message to cursor an return the arraylist
-            Cursor2.addRow(new Object[] { ""+sqlEx.getMessage() });
-            alc.set(1,Cursor2);
-            return alc;
-        } catch(Exception ex){
-            Log.d("printing exception", ex.getMessage());
-
-            //if any exceptions are triggered save the error message to cursor an return the arraylist
-            Cursor2.addRow(new Object[] { ""+ex.getMessage() });
-            alc.set(1,Cursor2);
-            return alc;
-        }
-    }
-
 }
