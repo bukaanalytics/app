@@ -12,13 +12,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.bukaanalytics.R;
-import com.github.bukaanalytics.common.HTTPRequestHelper;
 import com.github.bukaanalytics.common.model.BukaAnalyticsSqliteOpenHelper;
 import com.github.bukaanalytics.common.model.Product;
 import com.github.bukaanalytics.common.model.Stat;
-
-import java.util.ArrayList;
-import com.github.bukaanalytics.common.model.Post;
 
 import java.util.List;
 
