@@ -23,7 +23,6 @@ import com.github.bukaanalytics.biddingtools.FragmentBidding;
 import com.github.bukaanalytics.common.BukaAnalyticsBroadcastReceiver;
 import com.github.bukaanalytics.home.FragmentHome;
 import com.github.bukaanalytics.pricingtools.FragmentPricing;
-import com.github.bukaanalytics.reactnative.MyReactActivity;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -117,18 +116,8 @@ public class MainActivity extends AppCompatActivity
             fragmentclass = FragmentHome.class;
         } else if (id == R.id.nav_pricing) {
             fragmentclass = FragmentPricing.class;
-        } else if(id == R.id.nav_bidding) {
+        } else if (id == R.id.nav_bidding) {
             fragmentclass = FragmentBidding.class;
-        } else if (id == R.id.nav_rn) {
-            Intent intent = new Intent(this, MyReactActivity.class);
-            this.startActivity(intent);
-
-            item.setChecked(true);
-            setTitle(item.getTitle());
-
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
-            return true;
         } else {
             fragmentclass = FragmentHome.class;
         }
@@ -169,7 +158,7 @@ public class MainActivity extends AppCompatActivity
         // First parameter is the type: ELAPSED_REALTIME, ELAPSED_REALTIME_WAKEUP, RTC_WAKEUP
         // Interval can be INTERVAL_FIFTEEN_MINUTES, INTERVAL_HALF_HOUR, INTERVAL_HOUR, INTERVAL_DAY
         alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis,
-                AlarmManager.INTERVAL_HALF_HOUR, pIntent);
+                AlarmManager.INTERVAL_DAY, pIntent);
     }
 
     public void cancelAlarm() {
