@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, ScrollView, View, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, StyleSheet, ScrollView, View, TouchableOpacity } from 'react-native';
 import SubHeader from '@ui/SubHeader';
 import { AppStyles } from '@theme/';
 import { Alerts, Button, Card, Spacer, Text } from '@components/ui/';
@@ -48,6 +48,40 @@ class PricingAnalysis extends Component{
     const form = this.form.getValue();
     const pricing_filter = this.props.pricing_filter;
     this.props.getGraph(form.search, pricing_filter);
+  }
+
+  renderPriceAnalysis() {
+    if (this.props.isFetching) {
+      return <ActivityIndicator style={{flex: 1}} />
+    } else {
+      return(
+          <View>
+            <View style={styles.wrapperText}>
+              <View style={styles.infoText}>
+                <Text h4>Terendah</Text>
+                <Text h3> {numeral(this.props.min_price).format('0,0.0 a')} </Text>
+              </View>
+              <View style={styles.infoText}>
+                <Text h4>Rata-Rata</Text>
+                <Text h3> {numeral(this.props.avg_price).format('0,0.0 a')} </Text>
+              </View>
+              <View style={styles.infoText}>
+                <Text h4>Termahal</Text>
+                <Text h3> {numeral(this.props.max_price).format('0,0.0 a')} </Text>
+              </View>
+            </View>
+
+            <View style={styles.infoText}>
+              <View style={styles.wrapperText}>
+                <View style={styles.infoText}>
+                  <Text h2>Terbaik</Text>
+                  <Text h1> {numeral(this.props.best_price).format('0,0.0 a')} </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+      );
+    }
   }
 
   renderbar(){
@@ -149,6 +183,15 @@ class PricingAnalysis extends Component{
       }
     };
 
+    if(this.props.isFetching){
+      return (
+        <View>
+          <Text h4>Retrieving data from Bukalapak Server, Running our magic algorithm</Text>
+          <ActivityIndicator style={{flex: 1}} />
+        </View>
+      );
+    }
+
     if(this.props.graph.length > 0 ) {
       return <Bar data={data} options={options} accessorKey='v'/>
     }else{
@@ -198,29 +241,7 @@ class PricingAnalysis extends Component{
 
           <Card>
             <View style={[AppStyles.paddingLeftSml, AppStyles.paddingBottomSml]}>
-              <View style={styles.wrapperText}>
-                <View style={styles.infoText}>
-                  <Text h4>Terendah</Text>
-                  <Text h3> {numeral(this.props.min_price).format('0,0.0 a')} </Text>
-                </View>
-                <View style={styles.infoText}>
-                  <Text h4>Rata-Rata</Text>
-                  <Text h3> {numeral(this.props.avg_price).format('0,0.0 a')} </Text>
-                </View>
-                <View style={styles.infoText}>
-                  <Text h4>Termahal</Text>
-                  <Text h3> {numeral(this.props.max_price).format('0,0.0 a')} </Text>
-                </View>
-              </View>
-
-              <View style={styles.infoText}>
-                <View style={styles.wrapperText}>
-                  <View style={styles.infoText}>
-                    <Text h2>Terbaik</Text>
-                    <Text h1> {numeral(this.props.best_price).format('0,0.0 a')} </Text>
-                  </View>
-                </View>
-              </View>
+              {this.renderPriceAnalysis()}
 
             </View>
           </Card>

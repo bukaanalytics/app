@@ -10,6 +10,7 @@ export const DASHBOARD = {
   RESET_TRANSACTION_DATA: 'DASHBOARD_RESET_TRANSACTION_DATA',
   FETCHING_TRANSACTION_DATA: 'DASHBOARD_FETCHING_TRANSACTION_DATA',
   FETCH_TRANSACTION_COMPLETED: 'DASHBOARD_FETCH_TRANSACTION_COMPLETED',
+  FETCHING_SQLITE_DATA: 'DASHBOARD_FETCHING_SQLITE_DATA',
 };
 
 export function refreshData(refreshType) {
@@ -90,18 +91,23 @@ function setData(key, value) {
   };
 }
 
+function fetchSqliteData(flag) {
+  return {
+    type: DASHBOARD.FETCHING_SQLITE_DATA,
+    flag,
+  };
+}
+
 function getSqliteData(latestDate) {
   const momentObj = moment(latestDate, 'X');
   const end_date = momentObj.format('YYYY-MM-DD');
-  console.log('end_date is ');
-  console.log(momentObj);
   const start_date = momentObj.day(-6).format('YYYY-MM-DD');
-  console.log("start_date", start_date, "end_date", end_date);
 
   const end_prev_week = momentObj.subtract(1, 'day').format('YYYY-MM-DD');
   const start_prev_week = momentObj.subtract(6, 'day').format('YYYY-MM-DD');
   console.log("end_prev_week", end_prev_week, "start_next week", start_prev_week);
   return dispatch => {
+    dispatch(fetchSqliteData(true));
     Sqlite.getWeeklyView({
       start_date: start_date,
       end_date: end_date,
@@ -143,6 +149,8 @@ function getSqliteData(latestDate) {
     }, (res) => {
       dispatch(setData('revenue_attribution', res));
     });
+
+    dispatch(fetchSqliteData(false));
   };
 }
 

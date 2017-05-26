@@ -18,6 +18,7 @@ const initialState = {
       attribution: 1,
     },
   ],
+  isFetchingSqliteData: false,
 };
 
 export default function dashboardReducer(state = initialState, action) {
@@ -87,6 +88,11 @@ export default function dashboardReducer(state = initialState, action) {
       return {
         ...state,
         [action.key]: action.value,
+      };
+    case DASHBOARD.FETCHING_SQLITE_DATA:
+      return {
+        ...state,
+        isFetchingSqliteData: action.flag,
       };
     default:
       return state;
