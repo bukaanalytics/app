@@ -11,6 +11,7 @@ const initialState = {
   least_viewed: [],
   most_viewed: [],
   convertion_rate: 0,
+  prev_convertion_rate: 0,
   revenue_attribution: [
     {
       name: '',

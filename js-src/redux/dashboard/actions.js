@@ -98,6 +98,9 @@ function getSqliteData(latestDate) {
   const start_date = momentObj.day(-6).format('YYYY-MM-DD');
   console.log("start_date", start_date, "end_date", end_date);
 
+  const end_prev_week = momentObj.subtract(1, 'day').format('YYYY-MM-DD');
+  const start_prev_week = momentObj.subtract(6, 'day').format('YYYY-MM-DD');
+  console.log("end_prev_week", end_prev_week, "start_next week", start_prev_week);
   return dispatch => {
     Sqlite.getWeeklyView({
       start_date: start_date,
@@ -125,6 +128,13 @@ function getSqliteData(latestDate) {
       end_date: end_date,
     }, (res) => {
       dispatch(setData('convertion_rate', res));
+    });
+
+    Sqlite.getWeeklyConvertionRate({
+      start_date: start_prev_week,
+      end_date: end_prev_week,
+    }, (res) => {
+      dispatch(setData('prev_convertion_rate', res));
     });
 
     Sqlite.getWeeklyRevenueAttribution({
