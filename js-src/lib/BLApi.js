@@ -75,17 +75,18 @@ class BLApi {
   }
 
   static getProducts(page, keyword, filter = {}) {
+    console.log("selected filter are : " , filter);
     return axios.get(API_PRODUCTS, {
       params: {
-        page: page || 0,
+        page: page || 1,
         per_page: 24,
-        keywords: keyword || '',
-        category_id: filter.category_id || '',
+        keywords: keyword || 'murah',
+        category_id: filter.category_id || 159,
         nego: filter.nego || 1,
         harga_pas: filter.harga_pas || 1,
-        province: filter.province || 'Jawa Barat',
+        province: filter.province || 'DKI Jakarta',
         top_seller: filter.top_seller || 0,
-        city: filter.city || 'Jakarta',
+        city: filter.city || 'Jakarta Pusat',
         price_min: filter.price_min || 0,
         price_max: filter.price_max || 999999999,
         sort_by: filter.sort_by || 'Termurah', // Termahal, Terbaru, Acak

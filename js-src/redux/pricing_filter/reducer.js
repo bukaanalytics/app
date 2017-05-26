@@ -4,15 +4,15 @@ import {
 } from './constant';
 
 const initialState = {
-  category_id: -1,
+  category_id: 159,
   nego: 1, // harus dimapping..
   harga_pas: 1, // harus dimapping
   top_seller: 0,
-  conditions: '', // harus dimapping  antara new / used
+  conditions: '', // harus dimapping  antara new / used sementara disabled
   price_min: 0,
   price_max: 99999999,
-  province: '',
-  city: '',
+  province: 'DKI Jakarta',
+  city: 'Jakarta Pusat',
 };
 
 export default function PricingFilterReducer(state = initialState, action) {
