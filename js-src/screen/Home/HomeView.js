@@ -119,12 +119,14 @@ class Home extends Component {
       return {
         item: truncate(d.item, 25),
         view: numeral(d.view).format('0.0 a'),
+        market_view_count: numeral(d.market_view_count).format('0.0 a'),
       };
     });
     const dataSource_most_viewed = most_viewed.map( d => {
       return {
         item: truncate(d.item, 25),
         view: numeral(d.view).format('0.0 a'),
+        market_view_count: numeral(d.market_view_count).format('0.0 a'),
       };
     });
     console.log(revenue_attribution);
@@ -286,18 +288,18 @@ const columns = [
   {
     title: 'Item',
     dataIndex: 'item',
-    width: AppSizes.widthHalf-40,
+    width: AppSizes.widthThird,
   },
   {
     title: 'View',
     dataIndex: 'view',
-    width: AppSizes.widthHalf-40,
+    width: AppSizes.widthThird,
   },
-  // {
-  //   title: 'Avg. Market View',
-  //   dataIndex: 'avg',
-  //   width: AppSizes.widthThird-40,
-  // }
+  {
+    title: 'Avg. Market View',
+    dataIndex: 'market_view_count',
+    width: AppSizes.widthThird,
+  }
 ];
 const dataSource = [{
   item: 'Item A',

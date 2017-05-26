@@ -86,9 +86,11 @@ class BLSqlite {
   getWeeklyTopViewedProduct(param, callback) {
     this.db.executeSql(`
       SELECT name,
-             view
+             view,
+             market_view_count
       FROM   (SELECT product_id,
-                     SUM(view_count) AS view
+                     SUM(view_count) AS view,
+                     market_view_count
               FROM   stats
               WHERE  DATE BETWEEN ? AND ?
               GROUP  BY product_id) AS A
@@ -104,9 +106,11 @@ class BLSqlite {
   getWeeklyLeastViewedProduct(param, callback) {
     this.db.executeSql(`
       SELECT name,
-             view
+             view,
+             market_view_count
       FROM   (SELECT product_id,
-                     SUM(view_count) AS view
+                     SUM(view_count) AS view,
+                     market_view_count
               FROM   stats
               WHERE  DATE BETWEEN ? AND ?
               GROUP  BY product_id) AS A
@@ -262,6 +266,7 @@ class BLSqlite {
       retval.push({
         item: row.name,
         view: row.view,
+        market_view_count: row.market_view_count,
       });
     }
     return retval;
