@@ -90,7 +90,7 @@
                 android:id="@+id/textView_content_complaint"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="test3"
+                android:text=""
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"/>
         </LinearLayout>
@@ -114,7 +114,7 @@
                 android:id="@+id/textView_content_nego"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:text="test4"
+                android:text=""
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"/>
         </LinearLayout>

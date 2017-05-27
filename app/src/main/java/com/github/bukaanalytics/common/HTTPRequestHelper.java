@@ -81,8 +81,10 @@ public class HTTPRequestHelper {
                     @Override
                     public void onCompleted(Exception e, JsonObject result) {
                         // next perlu cek http status code nya 200 atau engga
-                        Log.d(TAG, "onCompleted: "+result);
-                        jsonObjectCallback.onCompleted(e, result);
+                        if (e == null) {
+                            Log.d(TAG, "onCompleted: "+result);
+                            jsonObjectCallback.onCompleted(e, result);
+                        }
                     }
                 });
 
