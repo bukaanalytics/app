@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+project.extensions.react = [
+        root: "../"
+]
+
 apply from: "../node_modules/react-native/react.gradle"
 apply from: "../node_modules/react-native-vector-icons/fonts.gradle"
 
@@ -17,10 +21,21 @@ android {
             abiFilters "armeabi-v7a", "x86"
         }
     }
+    signingConfigs {
+        release {
+            if (project.hasProperty('BUKA_ANALYTICS_STORE_FILE')) {
+                storeFile file(BUKA_ANALYTICS_STORE_FILE)
+                storePassword BUKA_ANALYTICS_STORE_PASSWORD
+                keyAlias BUKA_ANALYTICS_KEY_ALIAS
+                keyPassword BUKA_ANALYTICS_RELEASE_KEY_PASSWORD
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     configurations.all {
@@ -33,6 +48,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.koushikdutta.ion:ion:2.+'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:support-v4:25.3.1'
