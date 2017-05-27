@@ -46,7 +46,7 @@ export function getGraph(keyword, filter = null) {
     const promises = [];
     const sampling = 5;
     for (let i = 0; i < sampling; i++) {
-      promises.push(BLApi.getProducts(i, keyword));
+      promises.push(BLApi.getProducts(i, keyword, filter));
     }
 
     // set loading
@@ -58,7 +58,8 @@ export function getGraph(keyword, filter = null) {
 
       // tell ui component that fetching is completed
       const tmp_resp = responses.map(r => r.data);
-
+      console.log("Return dari server adalah ");
+      console.log(tmp_resp);
       // collecting all datas
       let prices = [];
       tmp_resp.forEach(t => {

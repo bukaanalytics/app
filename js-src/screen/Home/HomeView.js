@@ -60,6 +60,43 @@ class Home extends Component {
     )
   }
 
+  renderRevenueComparation = () => {
+    let { currentRevenue, previousRevenue } = this.props.dashboard
+    let _style = {};
+    if(currentRevenue < (0.8 * previousRevenue)){
+      _style = styles.statusTagBad;
+    } else if (currentRevenue < (1.2 * previousRevenue)) { // implicitly imply that the revenue above 0.8 since it fails in above code
+      _style = styles.statusTagWarning;
+    } else {
+      _style = styles.statusTagOk;
+    }
+    return (
+      <Text style={_style}>Compared to Prev Period</Text>
+    );
+  }
+
+  renderConvertionRateComparation = () => {
+    const { convertion_rate, prev_convertion_rate } = this.props.dashboard;
+    const curr_sold_accumulated = convertion_rate.sold_accumulated || 0;
+    const curr_view_accumulated = convertion_rate.view_accumulated || 1;
+    const prev_sold_accumulated = prev_convertion_rate.sold_accumulated || 0;
+    const prev_view_accumulated = prev_convertion_rate.view_accumulated || 1;
+    const conv_rate = curr_sold_accumulated / curr_view_accumulated * 100;
+    const prev_conv_rate = prev_sold_accumulated / prev_view_accumulated * 100;
+    console.log("conv rate", conv_rate, " prev conv_rate", prev_conv_rate);
+    let _style = {};
+    if(conv_rate < (0.8 * prev_conv_rate)){
+      _style = styles.statusTagBad;
+    } else if (conv_rate < (1.2 * prev_conv_rate)) { // implicitly imply that the revenue above 0.8 since it fails in above code
+      _style = styles.statusTagWarning;
+    } else {
+      _style = styles.statusTagOk;
+    }
+    return (
+      <Text style={_style}>Compared to Prev Period</Text>
+    );
+  }
+
   retrieveWeeklyData() {
     const { weekly_view } = this.props.dashboard;
     const view_stat = [];
@@ -75,12 +112,9 @@ class Home extends Component {
 
   render() {
     console.log("state are: ", this.props.dashboard);
-
-
-
     // Retriveing data from sqlite, truncating, and formating the number if needed
     viewStat = this.retrieveWeeklyData();
-    const { least_viewed, most_viewed, convertion_rate, revenue_attribution } = this.props.dashboard;
+    const { least_viewed, most_viewed, convertion_rate, revenue_attribution, prev_convertion_rate } = this.props.dashboard;
     const dataSource_least_viewed = least_viewed.map( d => {
       return {
         item: truncate(d.item, 25),
@@ -101,7 +135,7 @@ class Home extends Component {
       };
     });
     const conv_rate = numeral(convertion_rate.sold_accumulated / convertion_rate.view_accumulated * 100).format('0.0');
-
+    const prev_conv_rate = numeral(prev_convertion_rate.sold_accumulated / prev_convertion_rate.view_accumulated * 100).format('0.0');
 
 
     let maxViewStat = Math.max(...viewStat)
@@ -138,12 +172,12 @@ class Home extends Component {
             <View style={styles.statContainer}>
               <Text style={styles.centeredH3}>Revenue</Text>
               { this.getRevenue() }
-              <Text style={styles.statusTagOk}>Compared to Prev Period</Text>
+              { this.renderRevenueComparation() }
             </View>
             <View style={styles.statContainer}>
               <Text style={styles.centeredH3}>Conv. Rate</Text>
               <Text style={styles.centeredStat}> {conv_rate} %</Text>
-              <Text style={styles.statusTagWarning}>Compared to Prev Period</Text>
+              { this.renderConvertionRateComparation()}
             </View>
           </View>
 
@@ -194,12 +228,12 @@ class Home extends Component {
 
           <Text style={styles.sectionTitle}>Most Viewed Product</Text>
           <View style={styles.overviewContainer}>
-            <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource_most_viewed} />
+            <Table columnWidth={115} height={250} columns={columns} dataSource={dataSource_most_viewed} />
           </View>
 
           <Text style={styles.sectionTitle}>Least Viewed Product</Text>
           <View style={styles.overviewContainer}>
-            <Table columnWidth={115} height={150} columns={columns} dataSource={dataSource_least_viewed} />
+            <Table columnWidth={115} height={250} columns={columns} dataSource={dataSource_least_viewed} />
           </View>
         </ScrollView>
       </View>
@@ -296,7 +330,9 @@ const styles = {
     ...AppStyles.spreadHorizontalContainer,
     ...AppStyles.paddingHorizontal,
     backgroundColor: AppColors.brand.lightPrimary,
-    elevation: 4
+    elevation: 4,
+    height: 56,
+    alignItems: 'center',
   },
   overviewContainer: {
     ...AppStyles.row,
@@ -319,6 +355,14 @@ const styles = {
   statusTagOk: {
     ...AppStyles.textCenterAligned,
     backgroundColor: AppColors.brand.success,
+    padding: 4,
+    borderRadius: 16,
+    marginHorizontal: 4,
+    fontSize: 10
+  },
+  statusTagBad: {
+    ...AppStyles.textCenterAligned,
+    backgroundColor: AppColors.brand.lightPrimary,
     padding: 4,
     borderRadius: 16,
     marginHorizontal: 4,

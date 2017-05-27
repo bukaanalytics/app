@@ -11,12 +11,14 @@ const initialState = {
   least_viewed: [],
   most_viewed: [],
   convertion_rate: 0,
+  prev_convertion_rate: 0,
   revenue_attribution: [
     {
       name: '',
       attribution: 1,
     },
   ],
+  isFetchingSqliteData: false,
 };
 
 export default function dashboardReducer(state = initialState, action) {
@@ -87,7 +89,12 @@ export default function dashboardReducer(state = initialState, action) {
         ...state,
         [action.key]: action.value,
       };
+    case DASHBOARD.FETCHING_SQLITE_DATA:
+      return {
+        ...state,
+        isFetchingSqliteData: action.flag,
+      };
     default:
-      return initialState
+      return state;
   }
 }
