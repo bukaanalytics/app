@@ -7,6 +7,7 @@ const config = {
     users: 'users',
     products: 'products',
     stats: 'stats',
+    tokens: 'tokens'
   },
   col: {
     users: {
@@ -31,6 +32,11 @@ const config = {
       interest_count: 'interest_count',
       interest_total: 'interest_total',
     },
+    tokens: {
+      id: 'id',
+      user_id: 'user_id',
+      token: 'token'
+    }
   },
 };
 
@@ -168,6 +174,16 @@ class BLSqlite {
       });
   }
 
+  getActiveToken(callback) {
+    this.db.executeSql(`
+      SELECT * from tokens
+      ORDER BY id DESC
+      LIMIT 1
+    `, [], result => {
+      callback(this.parseActiveToken(result))
+    })
+  }
+
   createTablesIfNotExists() {
     this.db.executeSql(`
       CREATE TABLE IF NOT EXISTS users (
@@ -194,6 +210,12 @@ class BLSqlite {
         sold_total INTEGER,
         interest_count INTEGER,
         interest_total INTEGER
+      )`);
+    this.db.executeSql(`
+      CREATE TABLE IF NOT EXISTS tokens(
+        id INTEGER PRIMARY KEY,
+        user_id INTEGER,
+        token TEXT
       )`);
   }
 
@@ -232,6 +254,16 @@ class BLSqlite {
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       `, [param.date, param.day_name, param.product_id, param.view_count, param.view_total, param.sold_count, param.sold_total, param.interest_count, param.interest_total]);
   }
+
+  insertToken(param) {
+    this.db.executeSql(`
+      INSERT INTO ${config.tables.tokens} (
+        ${config.col.tokens.user_id},
+        ${config.col.tokens.token}
+      ) VALUES (?, ?)
+    `, [param.userId, param.token]);
+  }
+
   // ==================
   // Private Functions
   // ==================
@@ -292,6 +324,17 @@ class BLSqlite {
         item: row.name,
         bid_suggestion: row.bid_suggestion,
       });
+    }
+    return retval;
+  }
+
+  parseActiveToken(result) {
+    const retval = {}
+    const result_length = results.rows.length;
+    for (let i = 0; i < result_length; i++) {
+      const row = results.rows.item(i);
+      retval.userId = row.user_id;
+      retval.token = row.token;
     }
     return retval;
   }

@@ -4,8 +4,10 @@ import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
 
+import com.github.bukaanalytics.common.model.BukaAnalyticsSqliteOpenHelper;
 import com.github.bukaanalytics.common.model.Product;
 import com.github.bukaanalytics.common.model.Stat;
+import com.github.bukaanalytics.common.model.Token;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
@@ -70,7 +72,9 @@ public class HTTPRequestHelper {
         this.jsonObjectCallback = callback;
 
         // ini perlu di refactor
-        String appended = "32856476:9RQ3MbQlP4Fac16iv4e";
+        final BukaAnalyticsSqliteOpenHelper db = BukaAnalyticsSqliteOpenHelper.getInstance(context.getApplicationContext());
+        Token tokenData = db.getTokenData();
+        String appended = String.valueOf(tokenData.user_id) + ":" + tokenData.token;
         String auth= Base64.encodeToString(appended.getBytes(), Base64.NO_WRAP);
 
         Ion.with(context)

@@ -45,14 +45,14 @@ class BLApi {
   }
 
   static getTransactions(params, successCallback, errorCallback) {
-    let { perPage, page, since } = params
+    let { userId, token, perPage, page, since } = params
 
     return this.sendApiRequest({
       method: 'get',
       url: 'https://api.bukalapak.com/v2/transactions.json',
       auth: {
-        username: '6214450',
-        password: 'I1vy09dhNuWx3G0CGiN'
+        username: userId,
+        password: token
       },
       params: {
         page: page,
@@ -66,7 +66,7 @@ class BLApi {
 
       if (resData.transactions.length == perPage) {
         let newParam = {
-          perPage, since,
+          userId, token, perPage, since,
           page: page+1
         }
         this.getTransactions(newParam, successCallback, errorCallback)

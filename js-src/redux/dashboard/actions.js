@@ -32,7 +32,11 @@ export function refreshData(refreshType) {
     dispatch(getSqliteData(latestDate));
     console.log(Sqlite);
 
+    let userData = getState().user
+
     return BLApi.getTransactions({
+      userId: userData.userId,
+      token: userData.token,
       perPage: perPage,
       page: 1,
       since: since
