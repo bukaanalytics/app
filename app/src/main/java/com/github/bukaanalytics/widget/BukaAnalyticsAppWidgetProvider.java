@@ -43,9 +43,9 @@ public class BukaAnalyticsAppWidgetProvider extends AppWidgetProvider {
             Token tokenData = db.getTokenData();
             if (tokenData.id == 0) {
                 remoteViews.setViewVisibility(R.id.textView_not_login, View.VISIBLE);
-                remoteViews.setViewVisibility(R.id.layout_stat, View.INVISIBLE);
+                remoteViews.setViewVisibility(R.id.layout_stat, View.GONE);
             } else {
-                remoteViews.setViewVisibility(R.id.textView_not_login, View.INVISIBLE);
+                remoteViews.setViewVisibility(R.id.textView_not_login, View.GONE);
                 remoteViews.setViewVisibility(R.id.layout_stat, View.VISIBLE);
                 getUnread(context, appWidgetManager, remoteViews, widgetId);
                 getNotifByType("report", context, appWidgetManager, remoteViews, widgetId);
@@ -58,6 +58,7 @@ public class BukaAnalyticsAppWidgetProvider extends AppWidgetProvider {
 
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
                     0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            remoteViews.setOnClickPendingIntent(R.id.layout_container, pendingIntent);
 
             appWidgetManager.updateAppWidget(widgetId, remoteViews);
         }
