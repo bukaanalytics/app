@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { StyleSheet, ScrollView, View, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, StyleSheet, ScrollView, View, TouchableOpacity } from 'react-native';
 import SubHeader from '@ui/SubHeader';
 import { AppStyles } from '@theme/';
 import { Alerts, Button, Card, Spacer, Text } from '@components/ui/';
 import FormWrapper from 'tcomb-form-native';
 import _ from 'lodash';
 import Icon from 'react-native-vector-icons/FontAwesome'
+import numeral from 'numeral';
 
 import { Bar } from 'react-native-pathjs-charts';
 
@@ -23,12 +24,8 @@ const FORM_FIELDS = FormWrapper.struct({
   search: FormWrapper.String,
 });
 
-const FORM_OPTIONS = {
-  auto: 'placeholders',
-  stylesheet: FormWrapperStyle,
-};
-
 class PricingAnalysis extends Component{
+
   static navigationOptions = {
     title: 'Example',
   };
@@ -37,43 +34,119 @@ class PricingAnalysis extends Component{
     super(props)
   }
 
-  render() {
-    const Form = FormWrapper.form.Form;
+  FORM_OPTIONS = {
+    auto: 'placeholders',
+    stylesheet: FormWrapperStyle,
+    fields: {
+      search: {
+        onSubmitEditing: this.submitForm.bind(this),
+      }
+    }
+  }
 
+  submitForm(){
+    const form = this.form.getValue();
+    const pricing_filter = this.props.pricing_filter;
+    this.props.getGraph(form.search, pricing_filter);
+  }
+
+  renderPriceAnalysis() {
+    if (this.props.isFetching) {
+      return <ActivityIndicator style={{flex: 1}} />
+    } else {
+      return(
+          <View>
+            <View style={styles.wrapperText}>
+              <View style={styles.infoText}>
+                <Text h4>Terendah</Text>
+                <Text h3> {numeral(this.props.min_price).format('0,0.0 a')} </Text>
+              </View>
+              <View style={styles.infoText}>
+                <Text h4>Rata-Rata</Text>
+                <Text h3> {numeral(this.props.avg_price).format('0,0.0 a')} </Text>
+              </View>
+              <View style={styles.infoText}>
+                <Text h4>Termahal</Text>
+                <Text h3> {numeral(this.props.max_price).format('0,0.0 a')} </Text>
+              </View>
+            </View>
+
+            <View style={styles.infoText}>
+              <View style={styles.wrapperText}>
+                <View style={styles.infoText}>
+                  <Text h2>Terbaik</Text>
+                  <Text h1> {numeral(this.props.best_price).format('0,0.0 a')} </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+      );
+    }
+  }
+
+  renderbar(){
     let data = [
       [{
-        "v": 49,
-        "name": "apple"
-      }, {
-        "v": 42,
-        "name": "apple"
+        "v": 1,
+        "name": "1"
       }],
       [{
-        "v": 69,
-        "name": "banana"
-      }, {
-        "v": 62,
-        "name": "banana"
+        "v": 1,
+        "name": "2"
       }],
       [{
-        "v": 29,
-        "name": "grape"
-      }, {
-        "v": 15,
-        "name": "grape"
+        "v": 1,
+        "name": "3"
+      }],
+      [{
+        "v": 1,
+        "name": "4"
+      }],
+      [{
+        "v": 1,
+        "name": "5"
+      }],
+      [{
+        "v": 1,
+        "name": "6"
+      }],
+      [{
+        "v": 1,
+        "name": "7"
+      }],
+      [{
+        "v": 1,
+        "name": "8"
+      }],
+      [{
+        "v": 1,
+        "name": "9"
+      }],
+      [{
+        "v": 1,
+        "name": "10"
       }]
     ];
 
+    const graphdata = this.props.graph;
+    if (graphdata.length > 0) {
+      let test_data = [];
+      graphdata.forEach(g => {
+        test_data.push([g]);
+      });
+      data = test_data;
+    }
+
     let options = {
-      width: 300,
-      height: 300,
+      width: 220,
+      height: 220,
       margin: {
         top: 20,
         left: 25,
         bottom: 50,
         right: 20
       },
-      color: '#2980B9',
+      color: '#D71149',
       gutter: 20,
       animate: {
         type: 'oneByOne',
@@ -83,7 +156,7 @@ class PricingAnalysis extends Component{
       axisX: {
         showAxis: true,
         showLines: true,
-        showLabels: true,
+        showLabels: false,
         showTicks: true,
         zeroAxis: false,
         orient: 'bottom',
@@ -110,19 +183,41 @@ class PricingAnalysis extends Component{
       }
     };
 
+    if(this.props.isFetching){
+      return (
+        <View>
+          <Text h4>Retrieving data from Bukalapak Server, Running our magic algorithm</Text>
+          <ActivityIndicator style={{flex: 1}} />
+        </View>
+      );
+    }
 
+    if(this.props.graph.length > 0 ) {
+      return <Bar data={data} options={options} accessorKey='v'/>
+    }else{
+      return <Text h4>Start searching a keyword</Text>
+    }
+  }
+
+  render() {
+    const Form = FormWrapper.form.Form;
+    const Bar = this.renderbar();
     return (
       <View style={styles.container}>
         <SubHeader style={styles.searchbar}>
           <View style={{flexDirection:'row'}}>
             <Form
-              ref={(f) => { this.form = f; }}
+              ref={f => this.form = f}
               type={FORM_FIELDS}
-              options={FORM_OPTIONS}
+              options={this.FORM_OPTIONS}
             />
 
-
-            <Icon name="filter" size={32} style={{margin: 10}} />
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => { this.props.navigation.navigate('FilterScreen')}}
+            >
+              <Icon name="filter" size={32} style={{margin: 10, color:'#fff'}} />
+            </TouchableOpacity>
           </View>
         </SubHeader>
 
@@ -138,41 +233,15 @@ class PricingAnalysis extends Component{
             onPress={()=>{ console.log('somethng'); }}
           >
             <Card>
-              <Bar data={data} options={options} accessorKey='v'/>
+              { Bar }
               <View style={[AppStyles.paddingLeftSml, AppStyles.paddingBottomSml]}>
-                <Text h3>Title of post</Text>
-                <Text>
-                  seharusnya ini diagram , nanti aing lagi cari librarynya
-                </Text>
               </View>
             </Card>
           </TouchableOpacity>
 
           <Card>
             <View style={[AppStyles.paddingLeftSml, AppStyles.paddingBottomSml]}>
-              <View style={styles.wrapperText}>
-                <View style={styles.infoText}>
-                  <Text h4>Terendah</Text>
-                  <Text h3> 10K </Text>
-                </View>
-                <View style={styles.infoText}>
-                  <Text h4>Rata-Rata</Text>
-                  <Text h3> 20K </Text>
-                </View>
-                <View style={styles.infoText}>
-                  <Text h4>Termahal</Text>
-                  <Text h3> 30K </Text>
-                </View>
-              </View>
-
-              <View style={styles.infoText}>
-                <View style={styles.wrapperText}>
-                  <View style={styles.infoText}>
-                    <Text h2>Terbaik</Text>
-                    <Text h1> 20K </Text>
-                  </View>
-                </View>
-              </View>
+              {this.renderPriceAnalysis()}
 
             </View>
           </Card>
@@ -182,7 +251,6 @@ class PricingAnalysis extends Component{
     )
   }
 }
-
 
 const styles = StyleSheet.create({
   container: {

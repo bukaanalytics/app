@@ -10,9 +10,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ini Halaman Home!"
+        android:text="Output data akan keluar di sini"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
+        android:scrollbars="vertical"
         android:id="@+id/text_home"/>
 
 </RelativeLayout>

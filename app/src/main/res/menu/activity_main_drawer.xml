@@ -14,6 +14,10 @@
             android:id="@+id/nav_bidding"
             android:icon="@drawable/ic_bukaanalytics_bidding"
             android:title="Bidding" />
+        <item
+            android:id="@+id/nav_rn"
+            android:icon="@drawable/ic_bukaanalytics_bidding"
+            android:title="React Native" />
     </group>
 
 </menu>
