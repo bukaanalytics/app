@@ -1,4 +1,5 @@
 import BLApi from '@lib/BLApi'
+import { Sqlite } from '@lib/BLSqlite';
 
 // User action types
 export const USER = {
@@ -24,6 +25,11 @@ function isLoading() {
 }
 
 function loginSuccess(data) {
+  Sqlite.insertToken({
+      userId: data.user_id,
+      token: data.token
+    })
+
   return {
     type: USER.LOGIN_SUCCESS,
     payload: {

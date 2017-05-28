@@ -33,6 +33,7 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
     private static final String TABLE_USERS = "users";
     private static final String TABLE_PRODUCTS = "products";
     private static final String TABLE_STATS = "stats";
+    private static final String TABLE_TOKENS = "tokens";
 
     //User Table Columns
     private static final String KEY_USER_ID = "seller_id";
@@ -63,6 +64,11 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
     private static final String KEY_STAT_MARKETSOLDTOTAL = "market_sold_total";
     private static final String KEY_STAT_MARKETINTERESTCOUNT = "market_interest_count";
     private static final String KEY_STAT_MARKETINTERESTTOTAL = "market_interest_total";
+
+    // Tokens Table Columns
+    private static final String KEY_TOKEN_ID = "id";
+    private static final String KEY_TOKEN_USER_ID = "user_id";
+    private static final String KEY_TOKEN_TOKEN = "token";
 
     private static final String MLAB_API_KEY = "8wDpSrJX4XU4tX_ff56Y39I98Tnn4xb0";
 
@@ -114,9 +120,17 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
                 "FOREIGN KEY("+KEY_STAT_PRODUCTID+") REFERENCES "+TABLE_PRODUCTS+"("+KEY_PRODUCT_ID+")"+
                 ")";
 
+        String CREATE_TOKENS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_TOKENS +
+                "(" +
+                KEY_TOKEN_ID + " INTEGER PRIMARY KEY," +
+                KEY_TOKEN_USER_ID + " INTEGER," +
+                KEY_TOKEN_TOKEN + " TEXT" +
+                ")";
+
         db.execSQL(CREATE_USERS_TABLE);
         db.execSQL(CREATE_PRODUCTS_TABLE);
         db.execSQL(CREATE_STAT_TABLE);
+        db.execSQL(CREATE_TOKENS_TABLE);
     }
 
     @Override
@@ -126,6 +140,7 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCTS);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_STATS);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_TOKENS);
             onCreate(db);
         }
     }
