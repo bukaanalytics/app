@@ -6,10 +6,13 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import com.github.bukaanalytics.R;
 import com.github.bukaanalytics.common.HTTPRequestHelper;
+import com.github.bukaanalytics.common.model.BukaAnalyticsSqliteOpenHelper;
+import com.github.bukaanalytics.common.model.Token;
 import com.github.bukaanalytics.widget.widgetalarm.WidgetAlarm;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -29,17 +32,25 @@ public class BukaAnalyticsAppWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        final BukaAnalyticsSqliteOpenHelper db = BukaAnalyticsSqliteOpenHelper.getInstance(context.getApplicationContext());
         final int count = appWidgetIds.length;
-        int newOrder = 0;
 
         for (int i = 0; i < count; i++) {
             int widgetId = appWidgetIds[i];
 
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget);
 
-            getUnread(context, appWidgetManager, remoteViews, widgetId);
-            getNotifByType("report", context, appWidgetManager, remoteViews, widgetId);
-            getNotifByType("nego", context, appWidgetManager, remoteViews, widgetId);
+            Token tokenData = db.getTokenData();
+            if (tokenData.id == 0) {
+                remoteViews.setViewVisibility(R.id.textView_not_login, View.VISIBLE);
+                remoteViews.setViewVisibility(R.id.layout_stat, View.INVISIBLE);
+            } else {
+                remoteViews.setViewVisibility(R.id.textView_not_login, View.INVISIBLE);
+                remoteViews.setViewVisibility(R.id.layout_stat, View.VISIBLE);
+                getUnread(context, appWidgetManager, remoteViews, widgetId);
+                getNotifByType("report", context, appWidgetManager, remoteViews, widgetId);
+                getNotifByType("nego", context, appWidgetManager, remoteViews, widgetId);
+            }
 
             Intent intent = new Intent(context, BukaAnalyticsAppWidgetProvider.class);
             intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
@@ -48,7 +59,7 @@ public class BukaAnalyticsAppWidgetProvider extends AppWidgetProvider {
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
                     0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-//            appWidgetManager.updateAppWidget(widgetId, remoteViews);
+            appWidgetManager.updateAppWidget(widgetId, remoteViews);
         }
     }
 

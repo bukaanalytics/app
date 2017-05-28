@@ -288,6 +288,31 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
         return products;
     }
 
+    public Token getTokenData() {
+        Token tokenData = new Token(0,0,"");
+        String GET_ACTIVE_TOKEN = String.format("SELECT * FROM %s ORDER BY %s DESC LIMIT 1", TABLE_TOKENS, KEY_TOKEN_ID);
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery(GET_ACTIVE_TOKEN, null);
+        try{
+            if (cursor != null && cursor.getCount() > 0) {
+                if (cursor.moveToFirst()) {
+                    tokenData = new Token(cursor.getInt(cursor.getColumnIndex(KEY_TOKEN_ID)),
+                            cursor.getInt(cursor.getColumnIndex(KEY_TOKEN_USER_ID)),
+                            cursor.getString(cursor.getColumnIndex(KEY_TOKEN_TOKEN)));
+                }
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "getTokenData() Error: " + e.getMessage());
+        } finally {
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+        }
+
+        return tokenData;
+    }
+
     public List<Stat> getStats(String productId) {
         List<Stat> stats = new ArrayList<>();
 
@@ -436,4 +461,5 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
             return alc;
         }
     }
+
 }
