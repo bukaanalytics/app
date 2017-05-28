@@ -3,23 +3,23 @@ package com.github.bukaanalytics.widget;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.nfc.Tag;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.github.bukaanalytics.R;
 import com.github.bukaanalytics.common.HTTPRequestHelper;
+import com.github.bukaanalytics.widget.widgetalarm.WidgetAlarm;
 import com.google.gson.JsonObject;
-
-import java.util.Random;
 
 /**
  * Created by fawwaz.muhammad on 04/05/17.
  */
 
 public class BukaAnalyticsAppWidgetProvider extends AppWidgetProvider {
+
+    public static final String ACTION_AUTO_UPDATE = "AUTO_UPDATE";
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -42,6 +42,26 @@ public class BukaAnalyticsAppWidgetProvider extends AppWidgetProvider {
 
 //            appWidgetManager.updateAppWidget(widgetId, remoteViews);
         }
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+        if(intent.getAction().equals(ACTION_AUTO_UPDATE)) {
+            AppWidgetManager.getInstance(context).updateAppWidget(new ComponentName(context, BukaAnalyticsAppWidgetProvider.class), new RemoteViews(context.getPackageName(), R.layout.widget));
+        }
+    }
+
+    @Override
+    public void onEnabled(Context context) {
+        WidgetAlarm widgetAlarm = new WidgetAlarm(context);
+        widgetAlarm.startAlarm();
+    }
+
+    @Override
+    public void onDisabled(Context context) {
+        WidgetAlarm widgetAlarm = new WidgetAlarm(context);
+        widgetAlarm.stopAlarm();
     }
 
     private void getUnread(Context context, final AppWidgetManager appWidgetManager, final RemoteViews remoteViews, final int widgetId) {
