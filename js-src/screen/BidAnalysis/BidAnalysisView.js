@@ -1,10 +1,13 @@
 import React, { Component } from 'react'
 import { StyleSheet, ScrollView, View, TouchableOpacity, Dimensions } from 'react-native';
 import SubHeader from '@ui/SubHeader';
-import { AppStyles } from '@theme/';
+import { AppColors, AppSizes, AppStyles } from '@theme/'
 import { Alerts, Button, Card, Spacer, Text } from '@components/ui/';
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import Table from 'react-native-simple-table';
+import truncate from 'truncate';
+import numeral from 'numeral';
+import moment from 'moment';
 
 const { width, height } = Dimensions.get("window");
 const half_width = width/2;
@@ -17,7 +20,7 @@ const columns = [
   },
   {
     title: 'Bid',
-    dataIndex: 'bid',
+    dataIndex: 'bid_suggestion',
     width: 70,
   },
 ];
@@ -119,34 +122,33 @@ const dataSource = [
 
 class BidAnalysis extends Component{
 
+  getDateRange = () => {
+    let { latestDate } = this.props.dashboard
+    let momentObj = moment(latestDate, 'X')
+
+    let sundayDateStr = momentObj.format('D MMM')
+    let mondayDateStr = momentObj.day(-6).format('D MMM')
+
+    let range = mondayDateStr + ' - ' + sundayDateStr
+
+    return range
+  }
+
   render() {
+    const data_bid_suggestion = this.props.bidding.bid_suggestion.map(val => {
+      let _bid_suggestion = val.bid_suggestion; // pembulatan
+      const _item = truncate(val.item, 25);
+      if(val.bid_suggestion >= 10000) {
+        _bid_suggestion = 10000;
+      }
+      return {
+        item: _item,
+        bid_suggestion: numeral(_bid_suggestion).format('0,0'),
+      };
+    });
+
     return (
       <View style={styles.container}>
-        <SubHeader>
-          <View style={AppStyles.row}>
-
-              <View style={styles.subheader_icon}>
-                <Icon name="date-range" size={32} />
-              </View>
-              <View style={styles.subheader_text}>
-                <Text style={AppStyles.h3}>22 April - 29 April</Text>
-                <Text style={AppStyles.subtext}>14 April - 21 April</Text>
-              </View>
-
-              <View style={styles.subheader_left_button}>
-                <TouchableOpacity>
-                  <Icon name="keyboard-arrow-left" size={32} />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.subheader_right_button}>
-                <TouchableOpacity>
-                  <Icon name="keyboard-arrow-right" size={32} />
-                </TouchableOpacity>
-              </View>
-
-          </View>
-        </SubHeader>
-
         <ScrollView style={[AppStyles.container]}>
           <View style={[AppStyles.paddingHorizontal]}>
             <Spacer size={15} />
@@ -154,11 +156,10 @@ class BidAnalysis extends Component{
           </View>
           <Card>
             <View style={[AppStyles.paddingLeftSml, AppStyles.paddingBottomSml]}>
-              <Text h3>Title of post</Text>
-              <Text>
-                seharusnya ini diagram , nanti aing lagi cari librarynya
-              </Text>
-              <Table height={320} columnWidth={60} columns={columns} dataSource={dataSource} />
+              <View style={styles.buttonWrapper} >
+                <Button title="Re-calculate bidding suggestion !" onPress={()=>{ this.props.refreshBiddingData() }} />
+              </View>
+              <Table height={320} columnWidth={60} columns={columns} dataSource={data_bid_suggestion} />
             </View>
           </Card>
 
@@ -200,6 +201,17 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 10,
     padding:5,
+  },
+  buttonWrapper: {
+    marginBottom: 10,
+  },
+  dateHeaderContainer: {
+    ...AppStyles.spreadHorizontalContainer,
+    ...AppStyles.paddingHorizontal,
+    backgroundColor: AppColors.brand.lightPrimary,
+    elevation: 4,
+    height: 56,
+    alignItems: 'center',
   },
 });
 

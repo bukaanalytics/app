@@ -3,12 +3,12 @@ package com.github.bukaanalytics.common.model;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 import android.util.Log;
-import android.database.MatrixCursor;
 
 import com.github.bukaanalytics.common.HTTPRequestHelper;
 import com.google.gson.JsonArray;
@@ -421,5 +421,4 @@ public class BukaAnalyticsSqliteOpenHelper extends SQLiteOpenHelper {
             return alc;
         }
     }
-
 }
